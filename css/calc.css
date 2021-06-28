@@ -189,8 +189,8 @@ button {
     border-bottom: 5px solid rgb(170, 45, 0);
     -webkit-box-sizing: border-box;
             box-sizing: border-box;
-    background-image: -webkit-gradient(linear, left top, left bottom, from(rgb(97, 0, 0)), to(rgb(148, 0, 0)));
     background-image: -o-linear-gradient(rgb(97, 0, 0), rgb(148, 0, 0));
+    background-image: -webkit-gradient(linear, left top, left bottom, from(rgb(97, 0, 0)), to(rgb(148, 0, 0)));
     background-image: linear-gradient(rgb(97, 0, 0), rgb(148, 0, 0));
 }
 
@@ -541,8 +541,20 @@ button {
     text-shadow: 0 -.75px 1px gray, 0 .75px 1px white;
 }
 
+.btn.squared::after {
+    margin-left: -22px;
+}
+
+.btn.sum::after {
+    margin-left: -20px;
+}
+
 .greek {
     font-family: 'Newsreader', serif;
+}
+
+.btn.exchange::after {
+    margin: 0 0 0 -16px;
 }
 
 .swap-arrows {
