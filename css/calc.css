@@ -13,11 +13,11 @@
 
 * {
     -webkit-box-sizing: border-box;
-            box-sizing: border-box;
+    box-sizing: border-box;
     -webkit-user-select: none;
-       -moz-user-select: none;
-        -ms-user-select: none;
-            user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 button {
@@ -125,8 +125,8 @@ button {
     display: flex;
     -webkit-box-orient: horizontal;
     -webkit-box-direction: normal;
-        -ms-flex-direction: row;
-            flex-direction: row;
+    -ms-flex-direction: row;
+    flex-direction: row;
 }
 
 #digits_container {
@@ -136,8 +136,8 @@ button {
     display: flex;
     -webkit-box-orient: horizontal;
     -webkit-box-direction: normal;
-        -ms-flex-direction: row;
-            flex-direction: row;
+    -ms-flex-direction: row;
+    flex-direction: row;
     margin-top: -70px;
     width: 486px;
     height: 70px;
@@ -179,16 +179,16 @@ button {
     display: flex;
     -webkit-box-orient: vertical;
     -webkit-box-direction: normal;
-        -ms-flex-direction: column;
-            flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
     -webkit-box-pack: justify;
-        -ms-flex-pack: justify;
-            justify-content: space-between;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
     height: 50%;
     border: 2px solid rgb(207, 55, 0);
     border-bottom: 5px solid rgb(170, 45, 0);
     -webkit-box-sizing: border-box;
-            box-sizing: border-box;
+    box-sizing: border-box;
     background-image: -o-linear-gradient(rgb(97, 0, 0), rgb(148, 0, 0));
     background-image: -webkit-gradient(linear, left top, left bottom, from(rgb(97, 0, 0)), to(rgb(148, 0, 0)));
     background-image: linear-gradient(rgb(97, 0, 0), rgb(148, 0, 0));
@@ -200,11 +200,11 @@ button {
     display: flex;
     -webkit-box-orient: horizontal;
     -webkit-box-direction: normal;
-        -ms-flex-direction: row;
-            flex-direction: row;
+    -ms-flex-direction: row;
+    flex-direction: row;
     -webkit-box-pack: justify;
-        -ms-flex-pack: justify;
-            justify-content: space-between;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
     margin: 0 6px;
     height: 100%;
 }
@@ -222,8 +222,8 @@ button {
     display: flex;
     -webkit-box-orient: horizontal;
     -webkit-box-direction: normal;
-        -ms-flex-direction: row;
-            flex-direction: row;
+    -ms-flex-direction: row;
+    flex-direction: row;
     padding: 0 0 0 4px;
     height: 50%;
     border: 5px solid rgb(136, 36, 0);
@@ -267,11 +267,11 @@ button {
     display: flex;
     -webkit-box-orient: horizontal;
     -webkit-box-direction: normal;
-        -ms-flex-direction: row;
-            flex-direction: row;
+    -ms-flex-direction: row;
+    flex-direction: row;
     -webkit-box-pack: justify;
-        -ms-flex-pack: justify;
-            justify-content: space-between;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
     margin: 13px 15px 0 15px;
     border-radius: 3px;
 }
@@ -282,17 +282,17 @@ button {
     display: flex;
     -webkit-box-orient: horizontal;
     -webkit-box-direction: normal;
-        -ms-flex-direction: row;
-            flex-direction: row;
+    -ms-flex-direction: row;
+    flex-direction: row;
     -webkit-box-pack: justify;
-        -ms-flex-pack: justify;
-            justify-content: space-between;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
     color: var(--charcoal);
     font-family: 'Rajdhani', sans-serif;
     font-weight: 400;
     -webkit-transform: scaleX(2) translateX(25%);
-        -ms-transform: scaleX(2) translateX(25%);
-            transform: scaleX(2) translateX(25%);
+    -ms-transform: scaleX(2) translateX(25%);
+    transform: scaleX(2) translateX(25%);
     width: 50%;
 }
 
@@ -309,7 +309,7 @@ button {
     background: radial-gradient(rgb(37, 37, 36), var(--charcoal));
     border-radius: 2px;
     -webkit-box-shadow: 0 4px 2px black inset, 0 -1px 7px rgba(0, 0, 0, .8) inset;
-            box-shadow: 0 4px 2px black inset, 0 -1px 7px rgba(0, 0, 0, .8) inset;
+    box-shadow: 0 4px 2px black inset, 0 -1px 7px rgba(0, 0, 0, .8) inset;
 }
 
 .switch-container::before {
@@ -330,7 +330,7 @@ button {
     width: 60px;
     height: 35px;
     -webkit-box-shadow: 1px 2px 2px rgba(0, 0, 0, .7) inset, 1px 3px 2px black;
-            box-shadow: 1px 2px 2px rgba(0, 0, 0, .7) inset, 1px 3px 2px black;
+    box-shadow: 1px 2px 2px rgba(0, 0, 0, .7) inset, 1px 3px 2px black;
     border-radius: 1px;
     background: white;
     background: -o-repeating-linear-gradient(left,
@@ -382,24 +382,24 @@ button {
     display: flex;
     -webkit-box-orient: horizontal;
     -webkit-box-direction: normal;
-        -ms-flex-direction: row;
-            flex-direction: row;
+    -ms-flex-direction: row;
+    flex-direction: row;
     -webkit-box-pack: justify;
-        -ms-flex-pack: justify;
-            justify-content: space-between;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
     -webkit-box-align: center;
-        -ms-flex-align: center;
-            align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
     padding: 10px;
 }
 
 .make-container {
     -webkit-box-pack: start;
-        -ms-flex-pack: start;
-            justify-content: start;
+    -ms-flex-pack: start;
+    justify-content: start;
     -webkit-box-align: center;
-        -ms-flex-align: center;
-            align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
 }
 
 .make {
@@ -408,15 +408,15 @@ button {
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
     font-variant: small-caps;
     -webkit-transform: scaleX(1.2);
-        -ms-transform: scaleX(1.2);
-            transform: scaleX(1.2);
+    -ms-transform: scaleX(1.2);
+    transform: scaleX(1.2);
 }
 
 .model {
     font-family: 'Rajdhani', sans-serif;
     -webkit-transform: scaleX(2);
-        -ms-transform: scaleX(2);
-            transform: scaleX(2);
+    -ms-transform: scaleX(2);
+    transform: scaleX(2);
     margin-right: 30px;
 }
 
@@ -433,11 +433,11 @@ button {
     display: flex;
     -webkit-box-orient: horizontal;
     -webkit-box-direction: normal;
-        -ms-flex-direction: row;
-            flex-direction: row;
+    -ms-flex-direction: row;
+    flex-direction: row;
     -webkit-box-pack: justify;
-        -ms-flex-pack: justify;
-            justify-content: space-between;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
     max-width: 280px;
     margin: 0 auto;
 }
@@ -452,9 +452,9 @@ button {
 
 .btn {
     -webkit-user-select: none;
-       -moz-user-select: none;
-        -ms-user-select: none;
-            user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 #trigonometry>div,
@@ -481,7 +481,7 @@ button {
     border-top: 1px solid white;
     border-bottom: 2px solid rgb(63, 63, 63);
     -webkit-box-shadow: .5px 2px 2px black;
-            box-shadow: .5px 2px 2px black;
+    box-shadow: .5px 2px 2px black;
 }
 
 #trigonometry .btn::after,
@@ -529,7 +529,7 @@ button {
     width: 50px;
 }
 
-.larger > .btn {
+.larger>.btn {
     width: 48px;
 }
 
@@ -547,6 +547,36 @@ button {
 
 .btn.sum::after {
     margin-left: -20px;
+}
+
+.btn.pi,
+.btn.divide,
+.btn.multiply,
+.btn.subtract,
+.btn.add,
+.btn.equals {
+    font-size: 22px;
+}
+
+.btn.pi>.greek,
+.btn.divide>div,
+.btn.subtract>div,
+.btn.add>div,
+.btn.equals>div {
+    margin-top: -5px;
+}
+
+.btn.multiply>div {
+    margin-top: -4px;
+}
+
+.btn.pi::after,
+.btn.divide::after,
+.btn.multiply::after,
+.btn.subtract::after,
+.btn.add::after,
+.btn.equals::after {
+    margin: -4px 0 0 -16px;
 }
 
 .greek {
