@@ -183,9 +183,16 @@ function exchange(a, b) {
 }
 
 function getResult() {
-    result = new Operations(term1, term2)[operator]();
+    if (! term1 || ! term2) {
+        displayBlink();
+        return;
+    }
+    let result = new Operations(term1, term2)[operator]();
     formatNumberForDisplay(result);
+    clearTerms();
+    digitDepress(result);
 }
+
 /**
  * 
  */
@@ -220,6 +227,15 @@ function powerFlash() {
     eraseDisplay();
     resetDisplayValueArray(1, false);
     printResetDisplay();
+}
+
+function displayBlink() {
+    eraseDisplay();
+    setTimeout(
+        function() {
+            formatNumberForDisplay(displayValue);
+        }, 50
+    )
 }
 /**
  * 
