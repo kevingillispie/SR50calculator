@@ -90,7 +90,9 @@ const BUTTON_EVENT_FUNCTIONS = {
     "equals": function() {
         getResult();
     },
-    "ex": function() {},
+    "ex": function() {
+        formatNumberForDisplay(Math.pow(Math.E, displayValue));
+    },
     "exchange": function() {
         exchange(term1, term2);
     },
