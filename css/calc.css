@@ -46,7 +46,7 @@ button {
 }
 
 #upper_face {
-    height: 285px;
+    height: 281px;
     padding: 5px;
     background-color: silver;
     background: -o-radial-gradient(rgb(223, 223, 223), silver);
@@ -62,7 +62,7 @@ button {
     position: absolute;
     max-width: 500px;
     width: 90%;
-    height: 2px;
+    height: 1px;
     margin: 18.5px 5% 0 0;
     border-radius: 100%;
     background-color: rgb(255, 255, 255, .5);
@@ -541,6 +541,10 @@ button {
     text-shadow: 0 -.75px 1px gray, 0 .75px 1px white;
 }
 
+.greek {
+    font-family: 'Newsreader', serif;
+}
+
 .btn.squared::after {
     margin-left: -22px;
 }
@@ -554,7 +558,8 @@ button {
 .btn.multiply,
 .btn.subtract,
 .btn.add,
-.btn.equals {
+.btn.equals, 
+.btn.decimal {
     font-size: 22px;
 }
 
@@ -570,6 +575,10 @@ button {
     margin-top: -4px;
 }
 
+.btn.decimal>div {
+    margin-top: -8px;
+}
+
 .btn.pi::after,
 .btn.divide::after,
 .btn.multiply::after,
@@ -579,11 +588,8 @@ button {
     margin: -4px 0 0 -16px;
 }
 
-.greek {
-    font-family: 'Newsreader', serif;
-}
-
-.btn.exchange::after {
+.btn.exchange::after,
+.btn.decimal::after {
     margin: 0 0 0 -16px;
 }
 
