@@ -13,7 +13,7 @@ class Operations {
     divide() {
         return this.term1 / this.term2;
     }
-    eSquared() {
+    eRaised() {
         return Math.pow(Math.E, this.term1);
     }
     factorial(f = []) {
@@ -30,15 +30,12 @@ class Operations {
     multiply() {
         return this.term1 * this.term2;
     }
-    recall() {
-        return this.lastValue;
-    }
-    // squared() {
-
+    // recall() {
+    //     return this.lastValue;
     // }
-    store(display) {
-        this.lastValue = this.toNumber(display);
-    }
+    // store(display) {
+    //     this.lastValue = this.toNumber(display);
+    // }
     subtract() {
         return this.term1 - this.term2;
     }
@@ -79,7 +76,9 @@ const BUTTON_EVENT_FUNCTIONS = {
         resetDisplay(10, false, false);
     },
     "d-r": function() {},
-    "decimal": function() {},
+    "decimal": function() {
+        formatNumberForDisplay(displayValue + '.');
+    },
     "digit": function() {
         digitDepress(this.dataset.value);
     },
@@ -99,23 +98,39 @@ const BUTTON_EVENT_FUNCTIONS = {
     "factorial": function() {
         formatNumberForDisplay(factorial(displayValue));
     },
-    "hyp": function() {},
-    "inverse": function() {},
+    "hyp": function() {
+        depressOperator("hypotenuse");
+    },
+    "inverse": function() {
+        formatNumberForDisplay(1 / displayValue);
+    },
     "multiply": function() {
         depressOperator("multiply");
     },
-    "lnx": function() {},
-    "log": function() {},
+    "lnx": function() {
+        formatNumberForDisplay(Math.log(displayValue));
+    },
+    "log": function() {
+        formatNumberForDisplay(Math.log10(displayValue));
+    },
     "recall": function() {
         formatNumberForDisplay(storedValue);
     },
     "pi": function() {
         formatNumberForDisplay(Math.PI.toExponential(9));
     },
-    "pos-neg": function() {},
+    "pos-neg": function() {
+        displayValue = displayValue * -1;
+        updateTerm(displayValue.toString());
+        formatNumberForDisplay(displayValue.toString());
+    },
     "sin": function() {},
-    "sqrt": function() {},
-    "squared": function() {},
+    "sqrt": function() {
+        formatNumberForDisplay(Math.sqrt(displayValue));
+    },
+    "squared": function() {
+        formatNumberForDisplay(Math.pow(displayValue, 2));
+    },
     "store": function() {
         storedValue = displayValue;
     },
@@ -185,19 +200,27 @@ function exchange(a, b) {
 }
 
 function getResult() {
-    if (! term1 || ! term2) {
+    if (!term1 || !term2) {
         displayBlink();
         return;
     }
     let result = new Operations(term1, term2)[operator]();
     formatNumberForDisplay(result);
     clearTerms();
-    digitDepress(result);
 }
 
 /**
- * 
+ * CALCULATIONS
  */
+
+function factorial(n, f = []) {
+    for (let i = 2; i <= n; i++) {
+        f.push(i);
+    }
+    return f.reduce(function(a, b) {
+        return a * b;
+    });
+}
 
 /**
  * POWER ON / OFF
@@ -236,7 +259,7 @@ function displayBlink() {
     setTimeout(
         function() {
             formatNumberForDisplay(displayValue);
-        }, 50
+        }, 20
     )
 }
 /**
@@ -249,8 +272,16 @@ function updateDisplayValue() {
         displayValue += (displayValueArray[i] == '&nbsp;') ? '0' : displayValueArray[i];
     }
     displayValue = displayValue.replaceAll(',', '');
-    displayValue = parseFloat(displayValue);
+    displayValue = parseFloat(((displayValueArray[0] === '+' || displayValueArray[0] === '' || displayValueArray[0] === '&nbsp;') ? displayValue : displayValue * -1));
     saveTerm();
+}
+
+function updateTerm(u) {
+    if (term2 !== '') {
+        term2 = parseFloat(u);
+    } else {
+        term1 = parseFloat(u);
+    }
 }
 
 function clearDisplay(hasDecimal) {
@@ -264,7 +295,6 @@ function clearDisplay(hasDecimal) {
 }
 
 function digitDepress(digit) {
-    // (newTerm === true) ? resetDisplay(10,false) : '';
     updateDisplayValue();
     formatNumberForDisplay(displayValue + digit);
 }
@@ -275,8 +305,6 @@ function saveTerm() {
     } else {
         term2 = displayValue;
     }
-    console.log('T1: ', term1);
-    console.log('T2: ', term2);
 }
 
 function depressAnimation() {
@@ -284,7 +312,7 @@ function depressAnimation() {
 }
 
 function resetDisplayValueArray(n, hasDecimal) {
-    for (let i = 0; i < 14; i++) {
+    for (let i = 0; i < 16; i++) {
         if (i == n) {
             if (hasDecimal == true) {
                 displayValueArray[i] = [0, '.'];
@@ -331,14 +359,17 @@ function removeTrailingZeros() {
     }
 }
 
-function truncateNumberForDisplay(n, p) {
+function truncateNumberForDisplay(n) {
     let sign = Math.sign(n);
+    let p = 10 - parseInt(n.toString().indexOf('.'));
     let ee = n.toString().indexOf('e');
     if (ee >= 0) {
         return '+' + Number.parseFloat(n).toPrecision(10);
     } else {
-        if (n.toString().length > 10) {
-            return ((sign > 0) ? '+' : '') + Number.parseFloat(n).toExponential(9);
+        if (n.toString().length > 11 && p > 10) {
+            return Number.parseFloat(n).toExponential(9);
+        } else if (p < 0) {
+            return  Number.parseFloat(n); 
         }
         return (sign >= 0) ? '+' + Number.parseFloat(n).toFixed(p) : Number.parseFloat(n).toFixed(p);
     }
@@ -358,10 +389,9 @@ function printToDisplay() {
 }
 
 function formatNumberForDisplay(result) {
-    console.log(result);
     let placeholdingZeros = 0;
     let decimalIndex = result.toString().indexOf('.');
-    let trunc = truncateNumberForDisplay(result, 10 - decimalIndex);
+    let trunc = truncateNumberForDisplay(result);
     if (decimalIndex) {
         for (let i = decimalIndex + 1; i < trunc.length; i++) {
             if (trunc[i] !== '0') {
@@ -372,24 +402,14 @@ function formatNumberForDisplay(result) {
     }
     for (let i = 0; i < 16; i++) {
         displayValueArray[i] = (trunc[i]) ? trunc[i] : '0';
+        console.log(displayValueArray);
         if (displayValueArray[i] == '0' && trunc.indexOf('e') < 0) {
             trailingZeroTally();
         } else {
             trailingZeroTally('reset');
         }
     }
-    // console.log(displayValueArray);
     removeTrailingZeros();
     updateDisplayValue();
-    // console.log(displayValueArray);
     printToDisplay();
-}
-
-function factorial(n, f = []) {
-    for (let i = 2; i <= n; i++) {
-        f.push(i);
-    }
-    return f.reduce(function(a, b) {
-        return a * b;
-    });
 }
