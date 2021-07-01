@@ -77,7 +77,8 @@ const BUTTON_EVENT_FUNCTIONS = {
     },
     "d-r": function() {},
     "decimal": function() {
-        formatNumberForDisplay(displayValue + '.');
+        digitDepress(this.dataset.value);
+        // formatNumberForDisplay(displayValue + '.');
     },
     "digit": function() {
         digitDepress(this.dataset.value);
@@ -207,6 +208,7 @@ function getResult() {
     let result = new Operations(term1, term2)[operator]();
     formatNumberForDisplay(result);
     clearTerms();
+    term1 = result;
 }
 
 /**
@@ -274,6 +276,7 @@ function updateDisplayValue() {
     displayValue = displayValue.replaceAll(',', '');
     displayValue = parseFloat(((displayValueArray[0] === '+' || displayValueArray[0] === '' || displayValueArray[0] === '&nbsp;') ? displayValue : displayValue * -1));
     saveTerm();
+    console.log(term1, term2)
 }
 
 function updateTerm(u) {
@@ -402,7 +405,6 @@ function formatNumberForDisplay(result) {
     }
     for (let i = 0; i < 16; i++) {
         displayValueArray[i] = (trunc[i]) ? trunc[i] : '0';
-        console.log(displayValueArray);
         if (displayValueArray[i] == '0' && trunc.indexOf('e') < 0) {
             trailingZeroTally();
         } else {
