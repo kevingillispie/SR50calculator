@@ -268,17 +268,6 @@ function displayBlink() {
  * 
  */
 
-function updateDisplayValue() {
-    displayValue = '';
-    for (let i = 1; i < displayValueArray.length; i++) {
-        displayValue += (displayValueArray[i] == '&nbsp;') ? '0' : displayValueArray[i];
-    }
-    displayValue = displayValue.replaceAll(',', '');
-    displayValue = parseFloat(((displayValueArray[0] === '+' || displayValueArray[0] === '' || displayValueArray[0] === '&nbsp;') ? displayValue : displayValue * -1));
-    saveTerm();
-    console.log(term1, term2)
-}
-
 function updateTerm(u) {
     if (term2 !== '') {
         term2 = parseFloat(u);
@@ -363,7 +352,6 @@ function removeTrailingZeros() {
 }
 
 function truncateNumberForDisplay(n) {
-    let sign = Math.sign(n);
     let p = 10 - parseInt(n.toString().indexOf('.'));
     let ee = n.toString().indexOf('e');
     if (ee >= 0) {
@@ -374,7 +362,7 @@ function truncateNumberForDisplay(n) {
         } else if (p < 0) {
             return  Number.parseFloat(n); 
         }
-        return (sign >= 0) ? '+' + Number.parseFloat(n).toFixed(p) : Number.parseFloat(n).toFixed(p);
+        return (Math.sign(n) >= 0) ? '+' + Number.parseFloat(n).toFixed(p) : Number.parseFloat(n).toFixed(p);
     }
 }
 
@@ -389,6 +377,18 @@ function printToDisplay() {
         }
         display.insertAdjacentHTML('beforeend', `<div class="result${((displayValueArray[i+1] == '.') ? ' decimal' : '')}" data-value="${displayValueArray[i]}">${displayValueArray[i]}</div>`);
     }
+}
+
+function updateDisplayValue() {
+    displayValue = '';
+    for (let i = 1; i < displayValueArray.length; i++) {
+        displayValue += (displayValueArray[i] == '&nbsp;') ? '0' : displayValueArray[i];
+    }
+    displayValue = displayValue.replaceAll(',', '');
+    displayValue = parseFloat(((displayValueArray[0] === '+' || displayValueArray[0] === '' || displayValueArray[0] === '&nbsp;') ? displayValue : displayValue * -1));
+    console.log("Display value:", displayValue);
+
+    saveTerm();
 }
 
 function formatNumberForDisplay(result) {
