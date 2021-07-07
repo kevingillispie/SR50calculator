@@ -30,12 +30,6 @@ class Operations {
     multiply() {
         return this.term1 * this.term2;
     }
-    // recall() {
-    //     return this.lastValue;
-    // }
-    // store(display) {
-    //     this.lastValue = this.toNumber(display);
-    // }
     subtract() {
         return this.term1 - this.term2;
     }
@@ -276,16 +270,6 @@ function updateTerm(u) {
     }
 }
 
-function clearDisplay(hasDecimal) {
-    eraseDisplay();
-    if (hasDecimal) {
-        clearTerms();
-    }
-    setTimeout(function() {
-        resetDisplay(10, hasDecimal, true);
-    }, 10);
-}
-
 function digitDepress(digit) {
     updateDisplayValue();
     formatNumberForDisplay(displayValue + digit);
@@ -301,6 +285,20 @@ function saveTerm() {
 
 function depressAnimation() {
     // todo
+}
+
+/**
+ * DISPLAY-RELATED FUNCTIONS
+ */
+
+function clearDisplay(hasDecimal) {
+    eraseDisplay();
+    if (hasDecimal) {
+        clearTerms();
+    }
+    setTimeout(function() {
+        resetDisplay(10, hasDecimal, true);
+    }, 10);
 }
 
 function resetDisplayValueArray(n, hasDecimal) {
@@ -360,7 +358,7 @@ function truncateNumberForDisplay(n) {
         if (n.toString().length > 11 && p > 10) {
             return Number.parseFloat(n).toExponential(9);
         } else if (p < 0) {
-            return  Number.parseFloat(n); 
+            return Number.parseFloat(n);
         }
         return (Math.sign(n) >= 0) ? '+' + Number.parseFloat(n).toFixed(p) : Number.parseFloat(n).toFixed(p);
     }
