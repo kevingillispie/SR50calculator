@@ -145,17 +145,17 @@ for (let i = 0; i < 14; i++) {
     `);
 }
 
-powerSwitch.addEventListener('click', function() {
-    this.classList.toggle('on');
-    if (this.classList.contains('on')) {
+powerSwitch.addEventListener("click", function() {
+    this.classList.toggle("on");
+    if (this.classList.contains("on")) {
         setTimeout(powerOn, 100);
-    } else if (this.dataset.value == 'power') {
+    } else if (this.dataset.value == "power") {
         setTimeout(powerOff, 100);
     }
 });
 
-radDegSwitch.addEventListener('click', function() {
-    this.classList.toggle('on');
+radDegSwitch.addEventListener("click", function() {
+    this.classList.toggle("on");
 });
 
 /**
@@ -207,7 +207,7 @@ function getResult() {
 
 function displayFlash() {
     let tempUD = userDisplay.innerHTML;
-    userDisplay.innerHTML = '';
+    userDisplay.innerHTML = "";
     setTimeout(function() {
         userDisplay.innerHTML = tempUD;
     }, 10);
@@ -236,8 +236,8 @@ function powerOn() {
         resetDisplay(10, false, true);
     }, 100);
     buttons.forEach((btn) => {
-        btn.addEventListener('click', BUTTON_EVENT_FUNCTIONS[btn.getAttribute('name')]);
-        btn.addEventListener('click', BUTTON_EVENT_FUNCTIONS[(btn.classList.contains('digit') ? 'digit' : '')]);
+        btn.addEventListener("click", BUTTON_EVENT_FUNCTIONS[btn.getAttribute("name")]);
+        btn.addEventListener("click", BUTTON_EVENT_FUNCTIONS[(btn.classList.contains("digit") ? "digit" : '')]);
     });
 }
 
@@ -250,8 +250,8 @@ function powerOff() {
         clearStoredValue();
     }, 25);
     buttons.forEach((btn) => {
-        btn.removeEventListener('click', BUTTON_EVENT_FUNCTIONS[btn.getAttribute('name')]);
-        btn.removeEventListener('click', BUTTON_EVENT_FUNCTIONS.digit);
+        btn.removeEventListener("click", BUTTON_EVENT_FUNCTIONS[btn.getAttribute("name")]);
+        btn.removeEventListener("click", BUTTON_EVENT_FUNCTIONS.digit);
     });
 }
 
@@ -303,23 +303,23 @@ function resetDisplayValueArray(n, hasDecimal) {
     for (let i = 0; i < 16; i++) {
         if (i == n) {
             if (hasDecimal == true) {
-                displayValueArray[i] = [0, '.'];
+                displayValueArray[i] = [0, "."];
             } else {
-                displayValueArray[i] = [0, ''];
+                displayValueArray[i] = [0, ""];
             }
         } else {
-            displayValueArray[i] = ['', ''];
+            displayValueArray[i] = ["", ""];
         }
     }
 }
 
 function updateDisplayValueArray(trunc) {
     for (let i = 0; i < 16; i++) {
-        displayValueArray[i] = (trunc[i]) ? trunc[i] : '0';
-        if (displayValueArray[i] == '0' && trunc.indexOf('e') < 0) {
+        displayValueArray[i] = (trunc[i]) ? trunc[i] : "0";
+        if (displayValueArray[i] == "0" && trunc.indexOf("e") < 0) {
             trailingZeroTally();
         } else {
-            trailingZeroTally('reset');
+            trailingZeroTally("reset");
         }
     }
 }
@@ -336,12 +336,12 @@ function resetDisplay(n, b, erase) {
 
 function printResetDisplay() {
     for (let i = 0; i < 14; i++) {
-        userDisplay.insertAdjacentHTML('beforeend', `<div class="result${((displayValueArray[i][1]) ? ' decimal' : '')}" data-value="${displayValueArray[i][0]}">${displayValueArray[i][0]}</div>`);
+        userDisplay.insertAdjacentHTML("beforeend", `<div class="result${((displayValueArray[i][1]) ? " decimal" : "")}" data-value="${displayValueArray[i][0]}">${displayValueArray[i][0]}</div>`);
     }
 }
 
 function trailingZeroTally(z = 0) {
-    if (z == 'reset') {
+    if (z == "reset") {
         trailingZeroCount = 0;
     } else {
         trailingZeroCount++;
@@ -353,35 +353,35 @@ function removeTrailingZeros() {
         displayValueArray.pop();
     }
     for (let j = 0; j < trailingZeroCount - 4; j++) {
-        displayValueArray.splice(1, 0, '&nbsp;');
+        displayValueArray.splice(1, 0, "&nbsp;");
     }
 }
 
 function truncateNumberForDisplay(n) {
-    let p = 10 - parseInt(n.toString().indexOf('.'));
-    let ee = n.toString().indexOf('e');
+    let p = 10 - parseInt(n.toString().indexOf("."));
+    let ee = n.toString().indexOf("e");
     if (ee >= 0) {
-        return '+' + parseFloat(n).toPrecision(10);
+        return "+" + parseFloat(n).toPrecision(10);
     } else {
         if (n.toString().length > 11 && p > 10) {
             return parseFloat(n).toExponential(9);
         } else if (p < 0) {
             return parseFloat(n);
         }
-        return (Math.sign(n) >= 0) ? '+' + parseFloat(n).toFixed(p) : parseFloat(n).toFixed(p);
+        return (Math.sign(n) >= 0) ? "+" + parseFloat(n).toFixed(p) : parseFloat(n).toFixed(p);
     }
 }
 
 function printToDisplay() {
     clearUserDisplay();
     for (let i = 0; i < displayValueArray.length; i++) {
-        if (displayValueArray[i] == '.' || displayValueArray[i] == 'e') {
+        if (displayValueArray[i] == "." || displayValueArray[i] == "e") {
             continue;
         }
-        if (displayValueArray[i] == '+') {
-            displayValueArray[i] = '&nbsp;';
+        if (displayValueArray[i] == "+") {
+            displayValueArray[i] = "&nbsp;";
         }
-        userDisplay.insertAdjacentHTML('beforeend', `<div class="result${((displayValueArray[i+1] == '.') ? ' decimal' : '')}" data-value="${displayValueArray[i]}">${displayValueArray[i]}</div>`);
+        userDisplay.insertAdjacentHTML("beforeend", `<div class="result${((displayValueArray[i+1] == ".") ? " decimal" : "")}" data-value="${displayValueArray[i]}">${displayValueArray[i]}</div>`);
     }
     displayFlash();
 }
@@ -390,7 +390,7 @@ function updateDisplayValue(digit, clear) {
     if (clear === true) {
         clearDisplayValue()
     };
-    displayValue = displayValue.toString() + ((digit) ? digit : '');
+    displayValue = displayValue.toString() + ((digit) ? digit : "");
     updateDisplayValueArray(truncateNumberForDisplay(displayValue));
     saveTerm(displayValue);
     removeTrailingZeros();
