@@ -28,6 +28,9 @@ class Operations {
     xPower() {
         return Math.pow(this.term1, this.term2);
     }
+    xRoot() {
+        return this.term2 ** (1 / this.term1);
+    }
 }
 /**
  *
@@ -128,7 +131,9 @@ const BUTTON_EVENT_FUNCTIONS = {
     "xpower": function() {
         depressOperator("xPower");
     },
-    "xroot": function() {}
+    "xroot": function() {
+        depressOperator("xRoot");
+    }
 };
 
 for (let i = 0; i < 14; i++) {
