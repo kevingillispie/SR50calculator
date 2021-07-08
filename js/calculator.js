@@ -4,9 +4,6 @@ class Operations {
         this.term2 = this.toNumber(term[1]);
         this.lastValue = displayValue;
     }
-    __str__() {
-        return "The current terms are: " + this.term1 + " and " + this.term2 + ".";
-    }
     add() {
         return this.term1 + this.term2;
     }
@@ -15,14 +12,6 @@ class Operations {
     }
     eRaised() {
         return Math.pow(Math.E, this.term1);
-    }
-    factorial(f = []) {
-        for (let i = 2; i <= this.term1; i++) {
-            f.push(i);
-        }
-        return f.reduce(function(a, b) {
-            return a * b;
-        });
     }
     hypotenuse() {
         return Math.hypot(this.term1, this.term2);
@@ -40,7 +29,7 @@ class Operations {
 /**
  *
  */
-var displayValue = 0;
+var displayValue = "";
 var displayValueArray = [];
 var term1 = "";
 var term2 = "";
@@ -50,7 +39,7 @@ var result = "";
 var storedValue = 0;
 var trailingZeroCount = 0;
 
-var display = document.getElementById("digits_container");
+var userDisplay = document.getElementById("digits_container");
 var buttons = document.querySelectorAll(".btn");
 var re = document.getElementById("result_electronics");
 var powerSwitch = document.querySelector("[data-value=\"power\"]");
@@ -67,15 +56,13 @@ const BUTTON_EVENT_FUNCTIONS = {
     },
     "clear-entry": function() {
         clearDisplay(false);
-        resetDisplay(10, false, false);
     },
     "d-r": function() {},
     "decimal": function() {
-        digitDepress(this.dataset.value);
-        // formatNumberForDisplay(displayValue + '.');
+        updateDisplayValue(this.dataset.value, false);
     },
     "digit": function() {
-        digitDepress(this.dataset.value);
+        updateDisplayValue(this.dataset.value, false);
     },
     "divide": function() {
         depressOperator("divide");
@@ -85,46 +72,47 @@ const BUTTON_EVENT_FUNCTIONS = {
         getResult();
     },
     "ex": function() {
-        formatNumberForDisplay(Math.pow(Math.E, displayValue));
+        updateDisplayValue(Math.pow(Math.E, displayValue), true);
     },
     "exchange": function() {
         exchange(term1, term2);
     },
     "factorial": function() {
-        formatNumberForDisplay(factorial(displayValue));
+        updateDisplayValue(factorial(Math.trunc(displayValue)), true);
     },
     "hyp": function() {
         depressOperator("hypotenuse");
     },
     "inverse": function() {
-        formatNumberForDisplay(1 / displayValue);
+        updateDisplayValue(1 / displayValue, true);
     },
     "multiply": function() {
         depressOperator("multiply");
     },
     "lnx": function() {
-        formatNumberForDisplay(Math.log(displayValue));
+        updateDisplayValue(Math.log(displayValue), true);
     },
     "log": function() {
-        formatNumberForDisplay(Math.log10(displayValue));
+        updateDisplayValue(Math.log10(displayValue), true);
     },
     "recall": function() {
-        formatNumberForDisplay(storedValue);
+        updateDisplayValue(storedValue, true);
     },
     "pi": function() {
-        formatNumberForDisplay(Math.PI.toExponential(9));
+        updateDisplayValue(Math.PI.toExponential(9), true);
     },
     "pos-neg": function() {
         displayValue = displayValue * -1;
-        updateTerm(displayValue.toString());
-        formatNumberForDisplay(displayValue.toString());
+        updateTerm(displayValue);
+        updateDisplayValue(displayValue, true);
+        console.log("Terms: ", term1, term2);
     },
     "sin": function() {},
     "sqrt": function() {
-        formatNumberForDisplay(Math.sqrt(displayValue));
+        updateDisplayValue(Math.sqrt(displayValue), true);
     },
     "squared": function() {
-        formatNumberForDisplay(Math.pow(displayValue, 2));
+        updateDisplayValue(Math.pow(displayValue, 2), true);
     },
     "store": function() {
         storedValue = displayValue;
@@ -173,20 +161,31 @@ radDegSwitch.addEventListener('click', function() {
 /**
  * HELPER FUNCTIONS
  */
-function eraseDisplay() {
-    display.innerHTML = '';
+function clearUserDisplay() {
+    userDisplay.innerHTML = "";
+}
+
+function clearDisplayValue() {
+    displayValue = "";
 }
 
 function clearTerms() {
-    term1 = '';
-    term2 = '';
+    term1 = "";
+    term2 = "";
     newTerm = false;
+    clearDisplayValue();
+}
+
+function clearStoredValue() {
+    storedValue = 0;
 }
 
 function depressOperator(o) {
     operator = o;
     newTerm = true;
     resetDisplay(10, false, false);
+    clearDisplayValue();
+    displayFlash();
 }
 
 function exchange(a, b) {
@@ -196,13 +195,22 @@ function exchange(a, b) {
 
 function getResult() {
     if (!term1 || !term2) {
-        displayBlink();
+        clearDisplay(false);
+        resetDisplay(10, false, false);
         return;
     }
     let result = new Operations(term1, term2)[operator]();
-    formatNumberForDisplay(result);
     clearTerms();
+    updateDisplayValue(result, true);
     term1 = result;
+}
+
+function displayFlash() {
+    let tempUD = userDisplay.innerHTML;
+    userDisplay.innerHTML = '';
+    setTimeout(function() {
+        userDisplay.innerHTML = tempUD;
+    }, 10);
 }
 
 /**
@@ -210,6 +218,7 @@ function getResult() {
  */
 
 function factorial(n, f = []) {
+    if (Math.sign(n) == -1) {return n;}
     for (let i = 2; i <= n; i++) {
         f.push(i);
     }
@@ -235,8 +244,10 @@ function powerOn() {
 function powerOff() {
     powerFlash();
     setTimeout(() => {
-        eraseDisplay();
+        clearUserDisplay();
+        clearDisplayValue();
         clearTerms();
+        clearStoredValue();
     }, 25);
     buttons.forEach((btn) => {
         btn.removeEventListener('click', BUTTON_EVENT_FUNCTIONS[btn.getAttribute('name')]);
@@ -245,41 +256,27 @@ function powerOff() {
 }
 
 function powerFlash() {
-    eraseDisplay();
+    clearUserDisplay();
     resetDisplayValueArray(1, false);
     printResetDisplay();
-}
-
-function displayBlink() {
-    eraseDisplay();
-    setTimeout(
-        function() {
-            formatNumberForDisplay(displayValue);
-        }, 20
-    )
 }
 /**
  * 
  */
 
 function updateTerm(u) {
-    if (term2 !== '') {
+    if (term2 !== "") {
         term2 = parseFloat(u);
     } else {
         term1 = parseFloat(u);
     }
 }
 
-function digitDepress(digit) {
-    updateDisplayValue();
-    formatNumberForDisplay(displayValue + digit);
-}
-
-function saveTerm() {
+function saveTerm(dv) {
     if (newTerm === false) {
-        term1 = displayValue;
+        term1 = dv;
     } else {
-        term2 = displayValue;
+        term2 = dv;
     }
 }
 
@@ -292,7 +289,8 @@ function depressAnimation() {
  */
 
 function clearDisplay(hasDecimal) {
-    eraseDisplay();
+    clearUserDisplay();
+    clearDisplayValue();
     if (hasDecimal) {
         clearTerms();
     }
@@ -315,12 +313,22 @@ function resetDisplayValueArray(n, hasDecimal) {
     }
 }
 
+function updateDisplayValueArray(trunc) {
+    for (let i = 0; i < 16; i++) {
+        displayValueArray[i] = (trunc[i]) ? trunc[i] : '0';
+        if (displayValueArray[i] == '0' && trunc.indexOf('e') < 0) {
+            trailingZeroTally();
+        } else {
+            trailingZeroTally('reset');
+        }
+    }
+}
+
 function resetDisplay(n, b, erase) {
     if (erase) {
-        eraseDisplay();
+        clearUserDisplay();
     }
     resetDisplayValueArray(n, b);
-    updateDisplayValue();
     if (erase) {
         printResetDisplay();
     }
@@ -328,7 +336,7 @@ function resetDisplay(n, b, erase) {
 
 function printResetDisplay() {
     for (let i = 0; i < 14; i++) {
-        display.insertAdjacentHTML('beforeend', `<div class="result${((displayValueArray[i][1]) ? ' decimal' : '')}" data-value="${displayValueArray[i][0]}">${displayValueArray[i][0]}</div>`);
+        userDisplay.insertAdjacentHTML('beforeend', `<div class="result${((displayValueArray[i][1]) ? ' decimal' : '')}" data-value="${displayValueArray[i][0]}">${displayValueArray[i][0]}</div>`);
     }
 }
 
@@ -353,19 +361,19 @@ function truncateNumberForDisplay(n) {
     let p = 10 - parseInt(n.toString().indexOf('.'));
     let ee = n.toString().indexOf('e');
     if (ee >= 0) {
-        return '+' + Number.parseFloat(n).toPrecision(10);
+        return '+' + parseFloat(n).toPrecision(10);
     } else {
         if (n.toString().length > 11 && p > 10) {
-            return Number.parseFloat(n).toExponential(9);
+            return parseFloat(n).toExponential(9);
         } else if (p < 0) {
-            return Number.parseFloat(n);
+            return parseFloat(n);
         }
-        return (Math.sign(n) >= 0) ? '+' + Number.parseFloat(n).toFixed(p) : Number.parseFloat(n).toFixed(p);
+        return (Math.sign(n) >= 0) ? '+' + parseFloat(n).toFixed(p) : parseFloat(n).toFixed(p);
     }
 }
 
 function printToDisplay() {
-    eraseDisplay();
+    clearUserDisplay();
     for (let i = 0; i < displayValueArray.length; i++) {
         if (displayValueArray[i] == '.' || displayValueArray[i] == 'e') {
             continue;
@@ -373,43 +381,18 @@ function printToDisplay() {
         if (displayValueArray[i] == '+') {
             displayValueArray[i] = '&nbsp;';
         }
-        display.insertAdjacentHTML('beforeend', `<div class="result${((displayValueArray[i+1] == '.') ? ' decimal' : '')}" data-value="${displayValueArray[i]}">${displayValueArray[i]}</div>`);
+        userDisplay.insertAdjacentHTML('beforeend', `<div class="result${((displayValueArray[i+1] == '.') ? ' decimal' : '')}" data-value="${displayValueArray[i]}">${displayValueArray[i]}</div>`);
     }
+    displayFlash();
 }
 
-function updateDisplayValue() {
-    displayValue = '';
-    for (let i = 1; i < displayValueArray.length; i++) {
-        displayValue += (displayValueArray[i] == '&nbsp;') ? '0' : displayValueArray[i];
-    }
-    displayValue = displayValue.replaceAll(',', '');
-    displayValue = parseFloat(((displayValueArray[0] === '+' || displayValueArray[0] === '' || displayValueArray[0] === '&nbsp;') ? displayValue : displayValue * -1));
-    console.log("Display value:", displayValue);
-
-    saveTerm();
-}
-
-function formatNumberForDisplay(result) {
-    let placeholdingZeros = 0;
-    let decimalIndex = result.toString().indexOf('.');
-    let trunc = truncateNumberForDisplay(result);
-    if (decimalIndex) {
-        for (let i = decimalIndex + 1; i < trunc.length; i++) {
-            if (trunc[i] !== '0') {
-                break;
-            }
-            placeholdingZeros++;
-        }
-    }
-    for (let i = 0; i < 16; i++) {
-        displayValueArray[i] = (trunc[i]) ? trunc[i] : '0';
-        if (displayValueArray[i] == '0' && trunc.indexOf('e') < 0) {
-            trailingZeroTally();
-        } else {
-            trailingZeroTally('reset');
-        }
-    }
+function updateDisplayValue(digit, clear) {
+    if (clear === true) {
+        clearDisplayValue()
+    };
+    displayValue = displayValue.toString() + ((digit) ? digit : '');
+    updateDisplayValueArray(truncateNumberForDisplay(displayValue));
+    saveTerm(displayValue);
     removeTrailingZeros();
-    updateDisplayValue();
     printToDisplay();
 }
