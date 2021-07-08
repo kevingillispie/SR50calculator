@@ -25,6 +25,9 @@ class Operations {
     toNumber(n) {
         return parseFloat(n);
     }
+    xPower() {
+        return Math.pow(this.term1, this.term2);
+    }
 }
 /**
  *
@@ -122,7 +125,9 @@ const BUTTON_EVENT_FUNCTIONS = {
     },
     "sum": function() {},
     "tan": function() {},
-    "xpower": function() {},
+    "xpower": function() {
+        depressOperator("xPower");
+    },
     "xroot": function() {}
 };
 
