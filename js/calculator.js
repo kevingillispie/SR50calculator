@@ -232,14 +232,14 @@ function displayFlash() {
 }
 
 function displayFlashingNines() {
-    let flashOn = true;
+    let showNines = true;
     flashingNines = setInterval((displayValue = "+9.999999999e+99") => {
-        if (flashOn) {
+        if (showNines) {
             updateDisplayValue(displayValue, true);
-            flashOn = false;
+            showNines = false;
         } else {
             clearUserDisplay();
-            flashOn = true;
+            showNines = true;
         }
     }, 150);
 }
@@ -406,7 +406,7 @@ function truncateNumberForDisplay(n) {
     } else if (ee >= 0 && Math.sign(n) == -1) {
         return parseFloat(n).toPrecision(10);
     } else {
-        if (n.length > 11 && p > 10) {
+        if (n.length > 10 && p > 10) {
             return parseFloat(n).toExponential(9);
         } else if (p < 0) {
             return parseFloat(n);
