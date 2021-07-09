@@ -483,7 +483,7 @@ button {
     -webkit-box-shadow: .5px 2px 2px black;
     box-shadow: .5px 2px 2px black;
 }
-
+/*
 #trigonometry .btn::after,
 .function_keys .btn::after {
     content: '';
@@ -524,7 +524,7 @@ button {
 .function_keys .btn.swap::after {
     margin: -1px 0 0 -15px;
 }
-
+*/
 .larger {
     width: 50px;
 }
