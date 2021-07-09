@@ -35,15 +35,16 @@ class Operations {
 /**
  *
  */
-var displayValue = "";
-var displayValueArray = [];
-var term1 = "";
-var term2 = "";
-var newTerm = false;
-var operator = "";
-var result = "";
-var storedValue = 0;
-var trailingZeroCount = 0;
+var displayValue = "0",
+    displayValueArray = [],
+    term1 = "",
+    term2 = "",
+    newTerm = false,
+    operator = "",
+    result = "",
+    storedValue = 0,
+    trailingZeroCount = 0,
+    flashingNines = "";
 
 var userDisplay = document.getElementById("digits_container");
 var buttons = document.querySelectorAll(".btn");
@@ -52,89 +53,89 @@ var powerSwitch = document.querySelector("[data-value=\"power\"]");
 var radDegSwitch = document.querySelector("[data-value=\"rad-deg\"]");
 
 const BUTTON_EVENT_FUNCTIONS = {
-    "add": function () {
+    "add": function() {
         depressOperator("add");
     },
-    "arc": function () { },
-    "cos": function () { },
-    "clear": function () {
+    "arc": function() {},
+    "cos": function() {},
+    "clear": function() {
         clearDisplay(true);
     },
-    "clear-entry": function () {
+    "clear-entry": function() {
         clearDisplay(false);
     },
-    "d-r": function () { },
-    "decimal": function () {
+    "d-r": function() {},
+    "decimal": function() {
         if (displayValue.indexOf(".") == -1) {
             updateDisplayValue(this.dataset.value, false);
         } else {
             displayFlash();
         }
     },
-    "digit": function () {
+    "digit": function() {
         updateDisplayValue(this.dataset.value, false);
     },
-    "divide": function () {
+    "divide": function() {
         depressOperator("divide");
     },
-    "ee": function () { },
-    "equals": function () {
+    "ee": function() {},
+    "equals": function() {
         getResult();
     },
-    "ex": function () {
+    "ex": function() {
         updateDisplayValue(Math.pow(Math.E, displayValue), true);
     },
-    "exchange": function () {
+    "exchange": function() {
         exchange(term1, term2);
     },
-    "factorial": function () {
+    "factorial": function() {
         updateDisplayValue(factorial(Math.trunc(displayValue)), true);
     },
-    "hyp": function () {
+    "hyp": function() {
         depressOperator("hypotenuse");
     },
-    "inverse": function () {
+    "inverse": function() {
         updateDisplayValue(1 / displayValue, true);
     },
-    "multiply": function () {
+    "multiply": function() {
         depressOperator("multiply");
     },
-    "lnx": function () {
+    "lnx": function() {
         updateDisplayValue(Math.log(displayValue), true);
     },
-    "log": function () {
+    "log": function() {
         updateDisplayValue(Math.log10(displayValue), true);
     },
-    "recall": function () {
+    "recall": function() {
         updateDisplayValue(storedValue, true);
     },
-    "pi": function () {
+    "pi": function() {
         updateDisplayValue(Math.PI.toPrecision(10), true);
     },
-    "pos-neg": function () {
+    "pos-neg": function() {
         displayValue = displayValue * -1;
         updateTerm(displayValue);
         updateDisplayValue(displayValue, true);
     },
-    "sin": function () { },
-    "sqrt": function () {
+    "sin": function() {},
+    "sqrt": function() {
         updateDisplayValue(Math.sqrt(displayValue), true);
     },
-    "squared": function () {
+    "squared": function() {
         updateDisplayValue(Math.pow(displayValue, 2), true);
     },
-    "store": function () {
+    "store": function() {
         storedValue = displayValue;
     },
-    "subtract": function () {
+    "subtract": function() {
         depressOperator("subtract");
     },
-    "sum": function () { },
-    "tan": function () { },
-    "xpower": function () {
+    "sum": function() {},
+    "tan": function() {},
+    "xpower": function() {
         depressOperator("xPower");
     },
-    "xroot": function () {
+    "xroot": function() {
         depressOperator("xRoot");
     }
 };
@@ -158,7 +159,7 @@ for (let i = 0; i < 14; i++) {
     `);
 }
 
-powerSwitch.addEventListener("click", function () {
+powerSwitch.addEventListener("click", function() {
     this.classList.toggle("on");
     if (this.classList.contains("on")) {
         setTimeout(powerOn, 100);
@@ -167,7 +168,7 @@ powerSwitch.addEventListener("click", function () {
     }
 });
 
-radDegSwitch.addEventListener("click", function () {
+radDegSwitch.addEventListener("click", function() {
     this.classList.toggle("on");
 });
 
@@ -213,6 +214,10 @@ function getResult() {
         return;
     }
     let result = new Operations(term1, term2)[operator]();
+    if (result == "Infinity") {
+        displayFlashingNines();
+        return;
+    }
     clearTerms();
     updateDisplayValue(result, true);
     term1 = result;
@@ -220,10 +225,28 @@ function getResult() {
 
 function displayFlash() {
     let tempUD = userDisplay.innerHTML;
-    userDisplay.innerHTML = "";
-    setTimeout(function () {
+    clearUserDisplay();
+    setTimeout(function() {
         userDisplay.innerHTML = tempUD;
     }, 10);
+}
+
+function displayFlashingNines() {
+    let flashOn = true;
+    flashingNines = setInterval((displayValue = "+9.999999999e+99") => {
+        if (flashOn) {
+            updateDisplayValue(displayValue, true);
+            flashOn = false;
+        } else {
+            clearUserDisplay();
+            flashOn = true;
+        }
+    }, 150);
+}
+
+function clearFlashingNines() {
+    clearInterval(flashingNines);
+    resetDisplayValueArray();
 }
 
 /**
@@ -231,11 +254,13 @@ function displayFlash() {
  */
 
 function factorial(n, f = []) {
-    if (Math.sign(n) == -1) { return n; }
+    if (Math.sign(n) == -1) {
+        return n;
+    }
     for (let i = 2; i <= n; i++) {
         f.push(i);
     }
-    return f.reduce(function (a, b) {
+    return f.reduce(function(a, b) {
         return a * b;
     });
 }
@@ -255,6 +280,7 @@ function powerOn() {
 }
 
 function powerOff() {
+    clearFlashingNines();
     powerFlash();
     setTimeout(() => {
         clearUserDisplay();
@@ -302,12 +328,13 @@ function depressAnimation() {
  */
 
 function clearDisplay(hasDecimal) {
+    clearFlashingNines();
     clearUserDisplay();
     clearDisplayValue();
     if (hasDecimal) {
         clearTerms();
     }
-    setTimeout(function () {
+    setTimeout(function() {
         resetDisplay(10, hasDecimal, true);
     }, 10);
 }
@@ -371,6 +398,7 @@ function removeTrailingZeros() {
 }
 
 function truncateNumberForDisplay(n) {
+    if (n == "+9.999999999e+99") {return n;}
     let p = 10 - parseInt(n.indexOf("."));
     let ee = n.indexOf("e");
     if (ee >= 0 && Math.sign(n) !== -1) {
