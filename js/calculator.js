@@ -221,6 +221,7 @@ function getResult() {
     clearTerms();
     updateDisplayValue(result, true);
     term1 = result;
+    removeTrailingZero = true;
 }
 
 function displayFlash() {
@@ -398,7 +399,9 @@ function removeTrailingZeros() {
 }
 
 function truncateNumberForDisplay(n) {
-    if (n == "+9.999999999e+99") {return n;}
+    if (n == "+9.999999999e+99") {
+        return n;
+    }
     let p = 10 - parseInt(n.indexOf("."));
     let ee = n.indexOf("e");
     if (ee >= 0 && Math.sign(n) !== -1) {
@@ -437,5 +440,19 @@ function updateDisplayValue(digit, clear) {
     updateDisplayValueArray(truncateNumberForDisplay(displayValue));
     saveTerm(displayValue);
     removeTrailingZeros();
+    /**
+     * Display inputted zeros after decimal point.
+     */
+    console.log(digit,displayValue,displayValue.indexOf("."),displayValue[displayValue.length - 1]);
+    if (digit == "0" && displayValue.indexOf(".") !== -1) {
+        let tempArray = displayValueArray;
+        tempArray.push("0");
+        tempArray.shift();
+        displayValueArray = tempArray;
+        console.log(displayValueArray);
+    }
+    /**
+     * 
+     */
     printToDisplay();
 }
