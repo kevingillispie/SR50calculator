@@ -222,6 +222,7 @@ function getResult() {
     updateDisplayValue(result, true);
     term1 = result;
     removeTrailingZero = true;
+    operator = "";
 }
 
 function displayFlash() {
@@ -469,5 +470,14 @@ function updateDisplayValue(digit, clear) {
     /**
      * 
      */
+    // console.log("DV:",displayValue,"\n",printDisplayArray(),"\n",term1,"\n",term2,"\n","new term",newTerm,"\n","Operation",operator,"\n",result,"\n",storedValue,"\n",trailingZeroCount);
     printToDisplay();
+}
+
+function printDisplayArray() {
+    let temp = "";
+    for (i = 0; i < displayValueArray.length; i++) {
+        temp += displayValueArray[i];
+    }
+    return temp;
 }
