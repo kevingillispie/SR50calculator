@@ -26,7 +26,7 @@ class Operations {
         return parseFloat(n);
     }
     xPower() {
-        return Math.pow(this.term1, this.term2);
+        return Math.pow(this.term2, this.term1);
     }
     xRoot() {
         return this.term2 ** (1 / this.term1);
@@ -389,7 +389,7 @@ function trailingZeroTally(z) {
     }
 }
 
-function removeTrailingZeros() {
+function removeTrailingZeros(digit) {
     for (let i = 0; i < trailingZeroCount; i++) {
         displayValueArray.pop();
     }
@@ -432,24 +432,39 @@ function printToDisplay() {
     displayFlash();
 }
 
+/**
+ * 1.
+ * @param {string} digit 
+ * @param {bool} clear 
+ */
 function updateDisplayValue(digit, clear) {
     if (clear === true) {
-        clearDisplayValue()
-    };
+        clearDisplayValue();
+    }
+    /**
+     * REMOVE LEADING ZERO IF EXISTS
+     */
     displayValue = displayValue.toString() + ((digit) ? digit : "");
+    /**
+     * 
+     */
+    if (displayValue == ".") {
+        displayValue = "0.";
+    }
     updateDisplayValueArray(truncateNumberForDisplay(displayValue));
     saveTerm(displayValue);
-    removeTrailingZeros();
+    removeTrailingZeros(digit);
+
     /**
      * Display inputted zeros after decimal point.
      */
-    console.log(digit,displayValue,displayValue.indexOf("."),displayValue[displayValue.length - 1]);
+    // console.log(digit,displayValue,displayValue.indexOf("."),displayValue[displayValue.length - 1]);
     if (digit == "0" && displayValue.indexOf(".") !== -1) {
         let tempArray = displayValueArray;
         tempArray.push("0");
         tempArray.shift();
         displayValueArray = tempArray;
-        console.log(displayValueArray);
+        tempArray = [];
     }
     /**
      * 
