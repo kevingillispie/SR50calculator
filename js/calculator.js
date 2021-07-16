@@ -73,7 +73,7 @@ const BUTTON_EVENT_FUNCTIONS = {
         }
     },
     "digit": function() {
-        updateDisplayValue(this.dataset.value, false);
+        updateDisplayValue(this.dataset.value, (term1) ? true : false);
     },
     "divide": function() {
         depressOperator("divide");
@@ -194,35 +194,9 @@ function clearStoredValue() {
     storedValue = 0;
 }
 
-function depressOperator(o) {
-    operator = o;
-    newTerm = true;
-    resetDisplay(10, false, false);
-    clearDisplayValue();
-    displayFlash();
-}
-
 function exchange(a, b) {
     term1 = b;
     term2 = a;
-}
-
-function getResult() {
-    if (!term1 || !term2) {
-        clearDisplay(false);
-        resetDisplay(10, false, false);
-        return;
-    }
-    let result = new Operations(term1, term2)[operator]();
-    if (result == "Infinity") {
-        displayFlashingNines();
-        return;
-    }
-    clearTerms();
-    updateDisplayValue(result, true);
-    term1 = result;
-    removeTrailingZero = true;
-    operator = "";
 }
 
 function displayFlash() {
@@ -251,6 +225,9 @@ function clearFlashingNines() {
     resetDisplayValueArray();
 }
 
+function setOperator(o) {
+    operator = o;
+}
 /**
  * CALCULATIONS
  */
@@ -286,7 +263,6 @@ function powerOff() {
     powerFlash();
     setTimeout(() => {
         clearUserDisplay();
-        clearDisplayValue();
         clearTerms();
         clearStoredValue();
     }, 25);
@@ -314,7 +290,7 @@ function updateTerm(u) {
 }
 
 function saveTerm(dv) {
-    if (newTerm === false) {
+    if (!term1) {
         term1 = dv;
     } else {
         term2 = dv;
@@ -433,6 +409,35 @@ function printToDisplay() {
     displayFlash();
 }
 
+function depressOperator(o) {
+    if (term2) {
+        getResult();
+        setOperator(o)
+        return;
+    }
+    clearDisplayValue();
+    displayFlash();
+    resetDisplay(10, false, false);
+    setOperator(o)
+    newTerm = true;  
+}
+
+function getResult() {
+    if (!term1 || !term2) {
+        clearDisplay(false);
+        resetDisplay(10, false, false);
+        return;
+    }
+    let result = new Operations(term1, term2)[operator]();
+    if (result == "Infinity") {
+        displayFlashingNines();
+        return;
+    }
+    clearTerms();
+    updateDisplayValue(result, true);
+    removeTrailingZero = true;
+}
+
 /**
  * 1.
  * @param {string} digit 
@@ -455,11 +460,9 @@ function updateDisplayValue(digit, clear) {
     updateDisplayValueArray(truncateNumberForDisplay(displayValue));
     saveTerm(displayValue);
     removeTrailingZeros(digit);
-
     /**
      * Display inputted zeros after decimal point.
      */
-    // console.log(digit,displayValue,displayValue.indexOf("."),displayValue[displayValue.length - 1]);
     if (digit == "0" && displayValue.indexOf(".") !== -1) {
         let tempArray = displayValueArray;
         tempArray.push("0");
@@ -470,7 +473,6 @@ function updateDisplayValue(digit, clear) {
     /**
      * 
      */
-    // console.log("DV:",displayValue,"\n",printDisplayArray(),"\n",term1,"\n",term2,"\n","new term",newTerm,"\n","Operation",operator,"\n",result,"\n",storedValue,"\n",trailingZeroCount);
     printToDisplay();
 }
 
