@@ -73,7 +73,7 @@ const BUTTON_EVENT_FUNCTIONS = {
         }
     },
     "digit": function() {
-        updateDisplayValue(this.dataset.value, (term1) ? true : false);
+        updateDisplayValue(this.dataset.value, false);
     },
     "divide": function() {
         depressOperator("divide");
@@ -228,6 +228,16 @@ function clearFlashingNines() {
 function setOperator(o) {
     operator = o;
 }
+
+function toggleNewTerm() {
+    newTerm = (newTerm) ? false : true;
+}
+
+function updateOperatorNewTermDisplayValue(o) {
+    setOperator(o);
+    toggleNewTerm();
+    clearDisplayValue();
+}
 /**
  * CALCULATIONS
  */
@@ -290,7 +300,7 @@ function updateTerm(u) {
 }
 
 function saveTerm(dv) {
-    if (!term1) {
+    if (!newTerm) {
         term1 = dv;
     } else {
         term2 = dv;
@@ -412,23 +422,24 @@ function printToDisplay() {
 function depressOperator(o) {
     if (term2) {
         getResult();
-        setOperator(o)
+        updateOperatorNewTermDisplayValue(o);
         return;
     }
-    clearDisplayValue();
-    displayFlash();
+    updateOperatorNewTermDisplayValue(o);
     resetDisplay(10, false, false);
-    setOperator(o)
-    newTerm = true;  
+    displayFlash();
 }
 
 function getResult() {
+    let result;
     if (!term1 || !term2) {
         clearDisplay(false);
         resetDisplay(10, false, false);
         return;
+    } else {
+        result = new Operations(term1, term2)[operator]();
     }
-    let result = new Operations(term1, term2)[operator]();
+
     if (result == "Infinity") {
         displayFlashingNines();
         return;
