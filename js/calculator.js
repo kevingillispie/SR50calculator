@@ -125,7 +125,7 @@ const BUTTON_EVENT_FUNCTIONS = {
         updateDisplayValue(Math.pow(displayValue, 2), true);
     },
     "store": function() {
-        storedValue = displayValue;
+        storedValue = (displayValue) ? displayValue : 0;
     },
     "subtract": function() {
         depressOperator("subtract");
