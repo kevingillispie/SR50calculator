@@ -42,7 +42,7 @@ var displayValue = "0",
     newTerm = false,
     operator = "",
     result = "",
-    storedValue = 0,
+    storedValue = "",
     trailingZeroCount = 0,
     flashingNines = "";
 
@@ -128,7 +128,7 @@ const BUTTON_EVENT_FUNCTIONS = {
     "store": function() {
         storedValue = (displayValue) ? displayValue : 0;
         displayFlash();
-        clearTerms();
+        // clearTerms();
     },
     "subtract": function() {
         depressOperator("subtract");
@@ -410,6 +410,7 @@ function truncateNumberForDisplay(n) {
 
 function printToDisplay() {
     clearUserDisplay();
+    console.log(displayValueArray);
     for (let i = 0; i < displayValueArray.length; i++) {
         if (displayValueArray[i] == "." || displayValueArray[i] == "e") {
             continue;
@@ -423,6 +424,11 @@ function printToDisplay() {
 }
 
 function depressOperator(o) {
+    if (!term1 && storedValue) {
+        updateDisplayValue(storedValue, true);
+        updateOperatorNewTermDisplayValue(o);
+        return;
+    }
     if (term2) {
         getResult();
         updateOperatorNewTermDisplayValue(o);
