@@ -242,7 +242,7 @@ function updateOperatorNewTermDisplayValue(o) {
  * CALCULATIONS
  */
 
-function factorial(n, f = []) {
+function factorial(n, f = [1]) {
     if (Math.sign(n) == -1) {
         return n;
     }
