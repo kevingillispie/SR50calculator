@@ -96,9 +96,6 @@ const BUTTON_EVENT_FUNCTIONS = {
     "hyp": function() {
         depressOperator("hypotenuse");
     },
-    "inverse": function() {
-        updateDisplayValue(1 / displayValue, true);
-    },
     "multiply": function() {
         depressOperator("multiply");
     },
@@ -119,6 +116,9 @@ const BUTTON_EVENT_FUNCTIONS = {
         displayValue = displayValue * -1;
         updateTerm(displayValue);
         updateDisplayValue(displayValue, true);
+    },
+    "reciprocal": function() {
+        updateDisplayValue(1 / displayValue, true);
     },
     "sin": function() {
         updateDisplayValue(Math.sin(displayValue), true);
