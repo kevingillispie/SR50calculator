@@ -137,7 +137,13 @@ const BUTTON_EVENT_FUNCTIONS = {
     "subtract": function() {
         depressOperator("subtract");
     },
-    "sum": function() {},
+    "sum": function() {
+        storedValue = new Operations(displayValue, ((!storedValue) ? 0 : storedValue))["add"]();
+        updateDisplayValue(storedValue, true);
+        clearTerms();
+        toggleNewTerm();
+        updateOperatorNewTermDisplayValue("add");
+    },
     "tan": function() {
         updateDisplayValue(Math.tan(displayValue), true);
     },
