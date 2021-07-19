@@ -57,12 +57,14 @@ const BUTTON_EVENT_FUNCTIONS = {
         depressOperator("add");
     },
     "arc": function() {},
-    "cos": function() {},
+    "cos": function() {
+        updateDisplayValue(Math.cos(displayValue), true);
+    },
     "clear": function() {
-        clearDisplay(true);
+        clear(true);
     },
     "clear-entry": function() {
-        clearDisplay(false);
+        clear(false);
     },
     "d-r": function() {},
     "decimal": function() {
@@ -118,7 +120,9 @@ const BUTTON_EVENT_FUNCTIONS = {
         updateTerm(displayValue);
         updateDisplayValue(displayValue, true);
     },
-    "sin": function() {},
+    "sin": function() {
+        updateDisplayValue(Math.sin(displayValue), true);
+    },
     "sqrt": function() {
         updateDisplayValue(Math.sqrt(displayValue), true);
     },
@@ -134,7 +138,9 @@ const BUTTON_EVENT_FUNCTIONS = {
         depressOperator("subtract");
     },
     "sum": function() {},
-    "tan": function() {},
+    "tan": function() {
+        updateDisplayValue(Math.tan(displayValue), true);
+    },
     "xpower": function() {
         depressOperator("xPower");
     },
@@ -318,15 +324,17 @@ function depressAnimation() {
  * DISPLAY-RELATED FUNCTIONS
  */
 
-function clearDisplay(hasDecimal) {
+function clear(clearAll) {
     clearFlashingNines();
     clearUserDisplay();
     clearDisplayValue();
-    if (hasDecimal) {
+    if (clearAll) {
         clearTerms();
+    } else {
+        (term2) ? term2 = "" : term1 = ""; 
     }
     setTimeout(function() {
-        resetDisplay(10, hasDecimal, true);
+        resetDisplay(10, clearAll, true);
     }, 10);
 }
 
@@ -355,11 +363,11 @@ function updateDisplayValueArray(trunc) {
     }
 }
 
-function resetDisplay(n, b, erase) {
+function resetDisplay(n, hasDecimal, erase) {
     if (erase) {
         clearUserDisplay();
     }
-    resetDisplayValueArray(n, b);
+    resetDisplayValueArray(n, hasDecimal);
     if (erase) {
         printResetDisplay();
     }
@@ -410,7 +418,6 @@ function truncateNumberForDisplay(n) {
 
 function printToDisplay() {
     clearUserDisplay();
-    console.log(displayValueArray);
     for (let i = 0; i < displayValueArray.length; i++) {
         if (displayValueArray[i] == "." || displayValueArray[i] == "e") {
             continue;
@@ -442,7 +449,7 @@ function depressOperator(o) {
 function getResult() {
     let result;
     if (!term1 || !term2) {
-        clearDisplay(false);
+        clear(false);
         resetDisplay(10, false, false);
         return;
     } else {
