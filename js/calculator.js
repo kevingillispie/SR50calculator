@@ -108,6 +108,7 @@ const BUTTON_EVENT_FUNCTIONS = {
     },
     "recall": function() {
         updateDisplayValue(storedValue, true);
+        clearTerms();
     },
     "pi": function() {
         updateDisplayValue(Math.PI.toPrecision(10), true);
@@ -126,6 +127,8 @@ const BUTTON_EVENT_FUNCTIONS = {
     },
     "store": function() {
         storedValue = (displayValue) ? displayValue : 0;
+        displayFlash();
+        clearTerms();
     },
     "subtract": function() {
         depressOperator("subtract");
