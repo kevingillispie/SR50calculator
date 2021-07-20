@@ -37,12 +37,13 @@ class Operations {
  */
 var displayValue = "0",
     displayValueArray = [],
-    term1 = "",
-    term2 = "",
+    _X_ = "",
+    _Y_ = "",
+    _Z_ = "",
+    _M_ = "",
     newTerm = false,
     operator = "",
     result = "",
-    storedValue = "",
     trailingZeroCount = 0,
     flashingNines = "";
 
@@ -88,7 +89,7 @@ const BUTTON_EVENT_FUNCTIONS = {
         updateDisplayValue(Math.pow(Math.E, displayValue), true);
     },
     "exchange": function() {
-        exchange(term1, term2);
+        exchange(_X_, _Y_);
     },
     "factorial": function() {
         updateDisplayValue(factorial(Math.trunc(displayValue)), true);
@@ -105,10 +106,6 @@ const BUTTON_EVENT_FUNCTIONS = {
     "log": function() {
         updateDisplayValue(Math.log10(displayValue), true);
     },
-    "recall": function() {
-        updateDisplayValue(storedValue, true);
-        clearTerms();
-    },
     "pi": function() {
         updateDisplayValue(Math.PI.toPrecision(10), true);
     },
@@ -116,6 +113,10 @@ const BUTTON_EVENT_FUNCTIONS = {
         displayValue = displayValue * -1;
         updateTerm(displayValue);
         updateDisplayValue(displayValue, true);
+    },
+    "recall": function() {
+        updateDisplayValue(_M_, true);
+        clearTerms();
     },
     "reciprocal": function() {
         updateDisplayValue(1 / displayValue, true);
@@ -130,19 +131,18 @@ const BUTTON_EVENT_FUNCTIONS = {
         updateDisplayValue(Math.pow(displayValue, 2), true);
     },
     "store": function() {
-        storedValue = (displayValue) ? displayValue : 0;
+        _M_ = (displayValue) ? displayValue : 0;
         displayFlash();
-        // clearTerms();
     },
     "subtract": function() {
         depressOperator("subtract");
     },
     "sum": function() {
-        storedValue = new Operations(displayValue, ((!storedValue) ? 0 : storedValue))["add"]();
-        updateDisplayValue(storedValue, true);
+        _M_ = new Operations(displayValue, ((!_M_) ? 0 : _M_))["add"]();
+        updateDisplayValue(_M_, true);
         clearTerms();
         toggleNewTerm();
-        updateOperatorNewTermDisplayValue("add");
+        updateNewTermDisplayValue();
     },
     "tan": function() {
         updateDisplayValue(Math.tan(displayValue), true);
@@ -199,19 +199,19 @@ function clearDisplayValue() {
 }
 
 function clearTerms() {
-    term1 = "";
-    term2 = "";
+    _X_ = "";
+    _Y_ = "";
     newTerm = false;
     clearDisplayValue();
 }
 
-function clearStoredValue() {
-    storedValue = 0;
+function clear_M_() {
+    _M_ = 0;
 }
 
 function exchange(a, b) {
-    term1 = b;
-    term2 = a;
+    _X_ = b;
+    _Y_ = a;
 }
 
 function displayFlash() {
@@ -248,8 +248,7 @@ function toggleNewTerm() {
     newTerm = (newTerm) ? false : true;
 }
 
-function updateOperatorNewTermDisplayValue(o) {
-    setOperator(o);
+function updateNewTermDisplayValue() {
     toggleNewTerm();
     clearDisplayValue();
 }
@@ -289,7 +288,7 @@ function powerOff() {
     setTimeout(() => {
         clearUserDisplay();
         clearTerms();
-        clearStoredValue();
+        clear_M_();
     }, 25);
     buttons.forEach((btn) => {
         btn.removeEventListener("click", BUTTON_EVENT_FUNCTIONS[btn.getAttribute("name")]);
@@ -307,18 +306,18 @@ function powerFlash() {
  */
 
 function updateTerm(u) {
-    if (term2 !== "") {
-        term2 = parseFloat(u);
+    if (_Y_ !== "") {
+        _Y_ = parseFloat(u);
     } else {
-        term1 = parseFloat(u);
+        _X_ = parseFloat(u);
     }
 }
 
 function saveTerm(dv) {
     if (!newTerm) {
-        term1 = dv;
+        _X_ = dv;
     } else {
-        term2 = dv;
+        _Y_ = dv;
     }
 }
 
@@ -337,7 +336,7 @@ function clear(clearAll) {
     if (clearAll) {
         clearTerms();
     } else {
-        (term2) ? term2 = "" : term1 = ""; 
+        (_Y_) ? _Y_ = "" : _X_ = ""; 
     }
     setTimeout(function() {
         resetDisplay(10, clearAll, true);
@@ -437,29 +436,30 @@ function printToDisplay() {
 }
 
 function depressOperator(o) {
-    if (!term1 && storedValue) {
-        updateDisplayValue(storedValue, true);
-        updateOperatorNewTermDisplayValue(o);
+    setOperator(o);
+    if (!_X_ && _M_) {
+        updateDisplayValue(_M_, true);
+        updateNewTermDisplayValue();
         return;
     }
-    if (term2) {
+    if (_Y_) {
         getResult();
-        updateOperatorNewTermDisplayValue(o);
+        updateNewTermDisplayValue();
         return;
     }
-    updateOperatorNewTermDisplayValue(o);
+    updateNewTermDisplayValue();
     resetDisplay(10, false, false);
     displayFlash();
 }
 
 function getResult() {
     let result;
-    if (!term1 || !term2) {
+    if (!_X_ || !_Y_) {
         clear(false);
         resetDisplay(10, false, false);
         return;
     } else {
-        result = new Operations(term1, term2)[operator]();
+        result = new Operations(_X_, _Y_)[operator]();
     }
 
     if (result == "Infinity") {
