@@ -8,3 +8,6 @@ NOTE: This is a project in developement. It is **not** yet fully functional.
 This project will attempt to emulate the functionality and behavior of this classic calculator.
 
 ![TI SR-50 calculator in pure CSS.](https://kevingillispie.com/images/TI-SR-50-CSS.png "TI SR-50 rendered in pure CSS.")
+
+## UPDATES
+__20210720__ I've discovered the original SR-50 manual. It includes all the details about how the calculator operates that I could not extrapolate from the button labels themselves. Most importantly, it includes an explanation of how the onboard registers store data for algebraic calculations. Major rewrite of the codebase is commencing. 
