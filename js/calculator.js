@@ -1,3 +1,111 @@
+/**
+ * _X_ is the input register
+ * _Y_ is the process register
+ * _Z_ is the cumulative register
+ * _M_ is the memory register for storage
+ */
+var _X_ = 0,
+    _Y_ = 0,
+    _Z_ = 0,
+    _M_ = 0;
+/***/
+var re = document.getElementById("result_electronics"),
+    powerSwitch = document.querySelector("[data-value=\"power\"]"),
+    radDegSwitch = document.querySelector("[data-value=\"rad-deg\"]");
+
+/**
+ * DATA OPERATIONS
+ */
+
+/**
+ * /END
+ */
+
+/**
+ * ONBOOT
+ */
+ for (let i = 0; i < 14; i++) {
+    re.insertAdjacentHTML('afterbegin', `
+        <div class="digit-bg">
+            <div class="top">
+                <div class="lead-container">
+                    <div class="lead"></div>
+                    <div class="lead"></div>
+                </div>
+                <div class="btm-element"></div>
+            </div>
+            <div class="bottom">
+                <div class="lead"></div>
+                <div class="lead"></div>
+                <div class="lead"></div>
+            </div>
+        </div>
+    `);
+}
+
+powerSwitch.addEventListener("click", function() {
+    this.classList.toggle("on");
+    if (this.classList.contains("on")) {
+        setTimeout(powerOn, 100);
+    } else if (this.dataset.value == "power") {
+        setTimeout(powerOff, 100);
+    }
+});
+
+radDegSwitch.addEventListener("click", function() {
+    this.classList.toggle("on");
+});
+/**
+ * /END
+ */
+
+/**
+ * UI/UX FUNCTIONS
+ */
+
+/**
+ * POWER ON / OFF
+ */
+ function powerOn() {
+    setTimeout(powerFlash, 80);
+    setTimeout(() => {
+        resetDisplay(10, false, true);
+    }, 100);
+    buttons.forEach((btn) => {
+        btn.addEventListener("click", BUTTON_EVENT_FUNCTIONS[btn.getAttribute("name")]);
+        btn.addEventListener("click", BUTTON_EVENT_FUNCTIONS[(btn.classList.contains("digit") ? "digit" : '')]);
+    });
+}
+
+function powerOff() {
+    clearFlashingNines();
+    powerFlash();
+    setTimeout(() => {
+        clearUserDisplay();
+        clearTerms();
+        clear_M_();
+    }, 25);
+    buttons.forEach((btn) => {
+        btn.removeEventListener("click", BUTTON_EVENT_FUNCTIONS[btn.getAttribute("name")]);
+        btn.removeEventListener("click", BUTTON_EVENT_FUNCTIONS.digit);
+    });
+}
+
+function powerFlash() {
+    clearUserDisplay();
+    resetDisplayValueArray(1, false);
+    printResetDisplay();
+}
+/**
+ * /END
+ */
+
+
+/***************************************************************************/
+/***************************************************************************/
+/***************************************************************************/
+
+
 class Operations {
     constructor(...term) {
         this.term1 = this.toNumber(term[0]);
@@ -32,15 +140,9 @@ class Operations {
         return this.term2 ** (1 / this.term1);
     }
 }
-/**
- *
- */
+
 var displayValue = "0",
     displayValueArray = [],
-    _X_ = "",
-    _Y_ = "",
-    _Z_ = "",
-    _M_ = "",
     newTerm = false,
     operator = "",
     result = "",
@@ -50,8 +152,7 @@ var displayValue = "0",
 var userDisplay = document.getElementById("digits_container");
 var buttons = document.querySelectorAll(".btn");
 var re = document.getElementById("result_electronics");
-var powerSwitch = document.querySelector("[data-value=\"power\"]");
-var radDegSwitch = document.querySelector("[data-value=\"rad-deg\"]");
+
 
 const BUTTON_EVENT_FUNCTIONS = {
     "add": function() {
@@ -155,37 +256,7 @@ const BUTTON_EVENT_FUNCTIONS = {
     }
 };
 
-for (let i = 0; i < 14; i++) {
-    re.insertAdjacentHTML('afterbegin', `
-        <div class="digit-bg">
-            <div class="top">
-                <div class="lead-container">
-                    <div class="lead"></div>
-                    <div class="lead"></div>
-                </div>
-                <div class="btm-element"></div>
-            </div>
-            <div class="bottom">
-                <div class="lead"></div>
-                <div class="lead"></div>
-                <div class="lead"></div>
-            </div>
-        </div>
-    `);
-}
 
-powerSwitch.addEventListener("click", function() {
-    this.classList.toggle("on");
-    if (this.classList.contains("on")) {
-        setTimeout(powerOn, 100);
-    } else if (this.dataset.value == "power") {
-        setTimeout(powerOff, 100);
-    }
-});
-
-radDegSwitch.addEventListener("click", function() {
-    this.classList.toggle("on");
-});
 
 /**
  * HELPER FUNCTIONS
@@ -268,42 +339,7 @@ function factorial(n, f = [1]) {
     });
 }
 
-/**
- * POWER ON / OFF
- */
-function powerOn() {
-    setTimeout(powerFlash, 80);
-    setTimeout(() => {
-        resetDisplay(10, false, true);
-    }, 100);
-    buttons.forEach((btn) => {
-        btn.addEventListener("click", BUTTON_EVENT_FUNCTIONS[btn.getAttribute("name")]);
-        btn.addEventListener("click", BUTTON_EVENT_FUNCTIONS[(btn.classList.contains("digit") ? "digit" : '')]);
-    });
-}
 
-function powerOff() {
-    clearFlashingNines();
-    powerFlash();
-    setTimeout(() => {
-        clearUserDisplay();
-        clearTerms();
-        clear_M_();
-    }, 25);
-    buttons.forEach((btn) => {
-        btn.removeEventListener("click", BUTTON_EVENT_FUNCTIONS[btn.getAttribute("name")]);
-        btn.removeEventListener("click", BUTTON_EVENT_FUNCTIONS.digit);
-    });
-}
-
-function powerFlash() {
-    clearUserDisplay();
-    resetDisplayValueArray(1, false);
-    printResetDisplay();
-}
-/**
- * 
- */
 
 function updateTerm(u) {
     if (_Y_ !== "") {
@@ -336,7 +372,7 @@ function clear(clearAll) {
     if (clearAll) {
         clearTerms();
     } else {
-        (_Y_) ? _Y_ = "" : _X_ = ""; 
+        (_Y_) ? _Y_ = "": _X_ = "";
     }
     setTimeout(function() {
         resetDisplay(10, clearAll, true);
@@ -476,7 +512,7 @@ function getResult() {
  * @param {string} digit 
  * @param {bool} clear 
  */
-function updateDisplayValue(digit, clear) {
+ function updateDisplayValue(digit, clear) {
     if (clear === true) {
         clearDisplayValue();
     }
