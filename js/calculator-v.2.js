@@ -26,7 +26,8 @@ var re = document.getElementById("result_electronics"),
     powerSwitch = document.querySelector("[data-value=\"power\"]"),
     radDegSwitch = document.querySelector("[data-value=\"rad-deg\"]"),
     userDisplay = document.getElementById("digits_container"),
-    buttons = document.querySelectorAll(".btn");
+    buttons = document.querySelectorAll(".btn"),
+    displayValueArray = [];
 const BUTTON_EVENT_FUNCTIONS = {
     "add": function() {
         setOperand("add");
@@ -249,13 +250,18 @@ function digitDisplayElement(value = "") {
 }
 
 function formatValueForDisplay(v) {
-
+    // todo
 }
 
-function printValueToDisplay(v) {
+function printValueToDisplay(v = _X_["x"]) {
+    userDisplay.innerHTML = "";
     let sign = (getSign(v) > -1) ? "+" : "-";
+
     for (let i = 0; i < 14; i++) {
-        console.log(digitDisplayElement(v));
+        if (v.search("e") == -1) {
+            
+            userDisplay.insertAdjacentElement("beforeend", digitDisplayElement(v[i]));
+        }
     }
 }
 /**
@@ -269,6 +275,7 @@ function printValueToDisplay(v) {
 function inputValue(v) {
     _X_["x"] += v;
     scientificNotation(_X_["x"]);
+    printValueToDisplay(scientificNotation(_X_["x"]));
 }
 
 function setOperand(o) {
