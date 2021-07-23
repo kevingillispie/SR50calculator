@@ -25,9 +25,10 @@ var _X_ = {
 var re = document.getElementById("result_electronics"),
     powerSwitch = document.querySelector("[data-value=\"power\"]"),
     radDegSwitch = document.querySelector("[data-value=\"rad-deg\"]"),
-    userDisplay = document.getElementById("digits_container"),
     buttons = document.querySelectorAll(".btn"),
-    displayValueArray = [];
+    displayLEDcontainer = document.getElementById("digits_container"),
+    displayLEDs = displayLEDcontainer.children,
+    numberOfLEDs = 14;
 const BUTTON_EVENT_FUNCTIONS = {
     "add": function() {
         setOperand("add");
@@ -46,11 +47,7 @@ const BUTTON_EVENT_FUNCTIONS = {
     },
     "d-r": function() {},
     "decimal": function() {
-        if (_X_["x"].indexOf(".") == -1) {
-            console.log(this.dataset.value, false);
-        } else {
-            // displayFlash();
-        }
+        inputValue(this.dataset.value);
     },
     "digit": function() {
         inputValue(this.dataset.value);
@@ -88,15 +85,16 @@ const BUTTON_EVENT_FUNCTIONS = {
         console.log(Math.log10(_X_["x"]), true);
     },
     "pi": function() {
-        console.log(Math.PI.toPrecision(10), true);
+        /* MANUAL INDICATES PI IS STORED "TO 13 SIGNIFICANT DIGITS" */
+        inputValue(Math.PI.toPrecision(13));
     },
     "pos-neg": function() {
         _X_["x"] = _X_["x"] * -1;
         // updateTerm(_X_["x"]);
-        console.log(_X_["x"], true);
+        console.log(_X_["x"]);
     },
     "recall": function() {
-        console.log(_M_, true);
+        console.log(_M_);
         // clearTerms();
     },
     "reciprocal": function() {
@@ -150,13 +148,18 @@ function getValueStringLength() {
     return _X_["x"].length;
 }
 
+function checkForDecimalIn_X_() {
+    return _X_["x"].search(/\./);
+}
+
 function scientificNotation(v) {
-    console.log("Length:", v.length);
-    console.log("X:", _X_["x"]);
+    // console.log("Length:", v.length);
+    // console.log("X:", _X_["x"]);
     if (v > 10**10) {
         console.log("EE9:", parseFloat(v).toExponential(9));
         console.log("P9", parseFloat(v).toPrecision(10));
     }
+    return v;
 }
 /**
  * 
@@ -166,7 +169,7 @@ function scientificNotation(v) {
  * ONBOOT LOGIC
  */
 /* CREATE DISPLAY BACKGROUND */
-for (let i = 0; i < 14; i++) {
+for (let i = 0; i < numberOfLEDs; i++) {
     re.insertAdjacentHTML('afterbegin', `
         <div class="digit-bg">
             <div class="top">
@@ -183,6 +186,15 @@ for (let i = 0; i < 14; i++) {
             </div>
         </div>
     `);
+    displayLEDcontainer.insertAdjacentElement("beforeend", digitDisplayElement());
+}
+
+function digitDisplayElement(value = "") {
+    let DIV = document.createElement("DIV");
+    DIV.setAttribute("class", "result");
+    DIV.dataset.value = value;
+    DIV.innerText = value;
+    return DIV;
 }
 
 powerSwitch.addEventListener("click", function() {
@@ -241,27 +253,34 @@ function powerFlash() {
 /**
  * DISPLAY LOGIC
  */
-function digitDisplayElement(value = "") {
-    let DIV = document.createElement("DIV");
-    DIV.setAttribute("class", "result");
-    DIV.dataset.value = value;
-    DIV.innerText = value;
-    return DIV;
+
+function resetDisplay() {
+    for (const LED of displayLEDs) {
+        LED.classList.remove("decimal");
+        LED.innerText = "";
+    }
 }
 
-function formatValueForDisplay(v) {
-    // todo
+function displayFlash() {
+    let tempUD = displayLEDs;
+    resetDisplay();
+    setTimeout(function() {
+        displayLEDs = tempUD;
+    }, 10);
 }
 
-function printValueToDisplay(v = _X_["x"]) {
-    userDisplay.innerHTML = "";
-    let sign = (getSign(v) > -1) ? "+" : "-";
-
-    for (let i = 0; i < 14; i++) {
-        if (v.search("e") == -1) {
-            
-            userDisplay.insertAdjacentElement("beforeend", digitDisplayElement(v[i]));
+function print_X_ToDisplay(v) {
+    resetDisplay();
+    let vIndex = v.length;
+    let shift = 2;
+    for (let i = numberOfLEDs - 1; i >= 0; i--) {
+        if (v[vIndex] == ".") {
+            document.querySelectorAll(".result")[i - 2].classList.add("decimal");
+            shift = 1;
+        } else if (v[vIndex] && v.search("e") == -1) {
+            document.querySelectorAll(".result")[i - shift].innerText = v[vIndex];
         }
+        vIndex--;
     }
 }
 /**
@@ -273,17 +292,37 @@ function printValueToDisplay(v = _X_["x"]) {
  */
 
 function inputValue(v) {
+    console.log(v);
+    if (v == "." && checkForDecimalIn_X_() > -1) {
+        return;
+    } else if (v == "." && checkForDecimalIn_X_() == -1) {
+        // document.querySelectorAll(".result")[]
+    }
     _X_["x"] += v;
-    scientificNotation(_X_["x"]);
-    printValueToDisplay(scientificNotation(_X_["x"]));
+    // scientificNotation(_X_["x"]);
+    print_X_ToDisplay(scientificNotation(_X_["x"]));
 }
 
 function setOperand(o) {
     _X_["operation"] = o;
     if (o === "add" || o === "subtract") {
         _Z_["operation"] = o;
+        populateRegisters("z");
     } else {
         _Y_["operation"] = o;
+        populateRegisters("y");
     }
-    console.log(_X_["operation"], _Y_["operation"], _Z_["operation"]);
+}
+
+function populateRegisters(reg) {
+    if (reg == "y") {
+        _X_[reg] = _X_["x"];
+        _Y_["x"] = _X_["x"];
+    } else {
+        _X_[reg] = _X_["x"];
+        _Z_["x"] = _X_["x"];
+    }
+    console.log(_X_);
+    console.log(_Y_);
+    console.log(_Z_);
 }
