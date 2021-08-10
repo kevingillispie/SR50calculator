@@ -8,19 +8,19 @@ var _X_ = {
         "x": "",
         "y": "",
         "z": "",
-        "operation": ""
+        "operator": ""
     },
     _Y_ = {
         "x": "",
         "y": "",
-        "operation": ""
+        "operator": ""
     },
     _Z_ = {
         "x": "",
         "z": "",
-        "operation": ""
+        "operator": ""
     },
-    _M_ = "";
+    _M_ = parseFloat("0");
 /***/
 var re = document.getElementById("result_electronics"),
     powerSwitch = document.querySelector("[data-value=\"power\"]"),
@@ -31,10 +31,10 @@ var re = document.getElementById("result_electronics"),
     numberOfLEDs = 14;
 const BUTTON_EVENT_FUNCTIONS = {
     "add": function() {
-        setOperand("add");
+        setOperator("add");
     },
     "arc": function() {
-        setOperand("arc");
+        setOperator("arc");
     },
     "cos": function() {
         console.log(Math.cos(_X_["x"]), true);
@@ -53,7 +53,7 @@ const BUTTON_EVENT_FUNCTIONS = {
         inputValue(this.dataset.value);
     },
     "divide": function() {
-        setOperand("divide");
+        setOperator("divide");
     },
     "ee": function() {},
     "equals": function() {
@@ -73,10 +73,10 @@ const BUTTON_EVENT_FUNCTIONS = {
         console.log(factorial(Math.trunc(_X_["x"])), true);
     },
     "hyp": function() {
-        setOperand("hyperbolic");
+        setOperator("hyperbolic");
     },
     "multiply": function() {
-        setOperand("multiply");
+        setOperator("multiply");
     },
     "lnx": function() {
         console.log(Math.log(_X_["x"]), true);
@@ -114,7 +114,7 @@ const BUTTON_EVENT_FUNCTIONS = {
         displayFlash();
     },
     "subtract": function() {
-        setOperand("subtract");
+        setOperator("subtract");
     },
     "sum": function() {
         set_M_(_X_["x"] + _M_);
@@ -127,10 +127,10 @@ const BUTTON_EVENT_FUNCTIONS = {
         console.log(Math.tan(_X_["x"]), true);
     },
     "xpower": function() {
-        setOperand("xPower");
+        setOperator("xPower");
     },
     "xroot": function() {
-        setOperand("xRoot");
+        setOperator("xRoot");
     }
 };
 /**
@@ -155,7 +155,7 @@ function checkForDecimalIn_X_() {
 function scientificNotation(v) {
     // console.log("Length:", v.length);
     // console.log("X:", _X_["x"]);
-    if (v > 10**10) {
+    if (v > 10 ** 10) {
         console.log("EE9:", parseFloat(v).toExponential(9));
         console.log("P9", parseFloat(v).toPrecision(10));
     }
@@ -292,37 +292,64 @@ function print_X_ToDisplay(v) {
  */
 
 function inputValue(v) {
-    console.log(v);
+    /**
+     * DECIMAL CHECK
+     */
     if (v == "." && checkForDecimalIn_X_() > -1) {
         return;
     } else if (v == "." && checkForDecimalIn_X_() == -1) {
         // document.querySelectorAll(".result")[]
     }
+    /**
+     * 
+     */
     _X_["x"] += v;
+    /**
+     * UPDATE OTHER REGISTERS IF OPERAND EXISTS
+     */
+    if (_X_["operator"]) {
+        let o = _X_["operator"];
+        let reg = (o == "add" || o == "subtract") ? "z" : "y";
+        populateRegisters(reg);
+    }
+    /**
+     * 
+     */
     // scientificNotation(_X_["x"]);
     print_X_ToDisplay(scientificNotation(_X_["x"]));
+
+    displayRegsiters();
 }
 
-function setOperand(o) {
-    _X_["operation"] = o;
+function setOperator(o) {
+    _X_["operator"] = o;
     if (o === "add" || o === "subtract") {
-        _Z_["operation"] = o;
+        _Z_["operator"] = o;
         populateRegisters("z");
     } else {
-        _Y_["operation"] = o;
+        _Y_["operator"] = o;
         populateRegisters("y");
     }
+    displayRegsiters();
 }
 
 function populateRegisters(reg) {
     if (reg == "y") {
         _X_[reg] = _X_["x"];
         _Y_["x"] = _X_["x"];
+        _Y_["y"] = _X_["y"];
     } else {
         _X_[reg] = _X_["x"];
         _Z_["x"] = _X_["x"];
+        _Z_["z"] = _X_["z"];
     }
-    console.log(_X_);
-    console.log(_Y_);
-    console.log(_Z_);
+    _X_["x"] = "";
+    displayRegsiters();
+}
+
+function displayRegsiters() {
+    console.log("X",_X_);
+    console.log("Y",_Y_);
+    console.log("Z",_Z_);
+    console.log("M",_M_);
 }
