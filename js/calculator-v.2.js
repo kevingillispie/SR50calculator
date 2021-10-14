@@ -176,26 +176,6 @@ function scientificNotation(v) {
  * ONBOOT LOGIC
  */
 /* CREATE DISPLAY BACKGROUND */
-for (let i = 0; i < numberOfLEDs; i++) {
-    re.insertAdjacentHTML('afterbegin', `
-        <div class="digit-bg">
-            <div class="top">
-                <div class="lead-container">
-                    <div class="lead"></div>
-                    <div class="lead"></div>
-                </div>
-                <div class="btm-element"></div>
-            </div>
-            <div class="bottom">
-                <div class="lead"></div>
-                <div class="lead"></div>
-                <div class="lead"></div>
-            </div>
-        </div>
-    `);
-    displayLEDcontainer.insertAdjacentElement("beforeend", digitDisplayElement());
-}
-
 function digitDisplayElement(value = "") {
     let DIV = document.createElement("DIV");
     DIV.setAttribute("class", "result");
@@ -204,18 +184,40 @@ function digitDisplayElement(value = "") {
     return DIV;
 }
 
-powerSwitch.addEventListener("click", function() {
-    this.classList.toggle("on");
-    if (this.classList.contains("on")) {
-        setTimeout(powerOn, 100);
-    } else if (this.dataset.value == "power") {
-        setTimeout(powerOff, 100);
+! function() {
+    for (let i = 0; i < numberOfLEDs; i++) {
+        re.insertAdjacentHTML('afterbegin', `
+            <div class="digit-bg">
+                <div class="top">
+                    <div class="lead-container">
+                        <div class="lead"></div>
+                        <div class="lead"></div>
+                    </div>
+                    <div class="btm-element"></div>
+                </div>
+                <div class="bottom">
+                    <div class="lead"></div>
+                    <div class="lead"></div>
+                    <div class="lead"></div>
+                </div>
+            </div>
+        `);
+        displayLEDcontainer.insertAdjacentElement("beforeend", digitDisplayElement());
     }
-});
 
-radDegSwitch.addEventListener("click", function() {
-    this.classList.toggle("on");
-});
+    powerSwitch.addEventListener("click", function() {
+        this.classList.toggle("on");
+        if (this.classList.contains("on")) {
+            setTimeout(powerOn, 100);
+        } else if (this.dataset.value == "power") {
+            setTimeout(powerOff, 100);
+        }
+    });
+
+    radDegSwitch.addEventListener("click", function() {
+        this.classList.toggle("on");
+    });
+}();
 /**
  * /END
  */
