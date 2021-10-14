@@ -24,37 +24,39 @@ var re = document.getElementById("result_electronics"),
 /**
  * ONBOOT
  */
- for (let i = 0; i < 14; i++) {
-    re.insertAdjacentHTML('afterbegin', `
-        <div class="digit-bg">
-            <div class="top">
-                <div class="lead-container">
+! function() {
+    for (let i = 0; i < 14; i++) {
+        re.insertAdjacentHTML('afterbegin', `
+            <div class="digit-bg">
+                <div class="top">
+                    <div class="lead-container">
+                        <div class="lead"></div>
+                        <div class="lead"></div>
+                    </div>
+                    <div class="btm-element"></div>
+                </div>
+                <div class="bottom">
+                    <div class="lead"></div>
                     <div class="lead"></div>
                     <div class="lead"></div>
                 </div>
-                <div class="btm-element"></div>
             </div>
-            <div class="bottom">
-                <div class="lead"></div>
-                <div class="lead"></div>
-                <div class="lead"></div>
-            </div>
-        </div>
-    `);
-}
-
-powerSwitch.addEventListener("click", function() {
-    this.classList.toggle("on");
-    if (this.classList.contains("on")) {
-        setTimeout(powerOn, 100);
-    } else if (this.dataset.value == "power") {
-        setTimeout(powerOff, 100);
+        `);
     }
-});
 
-radDegSwitch.addEventListener("click", function() {
-    this.classList.toggle("on");
-});
+    powerSwitch.addEventListener("click", function() {
+        this.classList.toggle("on");
+        if (this.classList.contains("on")) {
+            setTimeout(powerOn, 100);
+        } else if (this.dataset.value == "power") {
+            setTimeout(powerOff, 100);
+        }
+    });
+
+    radDegSwitch.addEventListener("click", function() {
+        this.classList.toggle("on");
+    });
+}();
 /**
  * /END
  */
@@ -66,7 +68,7 @@ radDegSwitch.addEventListener("click", function() {
 /**
  * POWER ON / OFF
  */
- function powerOn() {
+function powerOn() {
     setTimeout(powerFlash, 80);
     setTimeout(() => {
         resetDisplay(10, false, true);
@@ -512,7 +514,7 @@ function getResult() {
  * @param {string} digit 
  * @param {bool} clear 
  */
- function updateDisplayValue(digit, clear) {
+function updateDisplayValue(digit, clear) {
     if (clear === true) {
         clearDisplayValue();
     }
