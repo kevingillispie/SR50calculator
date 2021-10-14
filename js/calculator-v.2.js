@@ -304,15 +304,24 @@ function inputValue(v) {
     /**
      * DECIMAL CHECK
      */
-    if (v == "." && checkForDecimalInregisters._X_() > -1) {
+    if (v == "." && checkForDecimalIn_X_() > -1) {
         return;
-    } else if (v == "." && checkForDecimalInregisters._X_() == -1) {
-        // document.querySelectorAll(".result")[]
     }
     /**
      * 
      */
+
+    /**
+     * REMOVE PLACEHOLDER ZERO IF EXISTS
+     */
+     removeInitialZero();
+    /**
+     * 
+     */
     registers._X_["x"] += v;
+    /**
+     * 
+     */
     /**
      * UPDATE OTHER REGISTERS IF OPERAND EXISTS
      */
@@ -343,12 +352,11 @@ function setOperator(o) {
 }
 
 function populateRegisters(reg) {
+    registers._X_[reg] = registers._X_["x"];
     if (reg == "y") {
-        registers._X_[reg] = registers._X_["x"];
         registers._Y_["x"] = registers._X_["x"];
         registers._Y_["y"] = registers._X_["y"];
     } else {
-        registers._X_[reg] = registers._X_["x"];
         registers._Z_["x"] = registers._X_["x"];
         registers._Z_["z"] = registers._X_["z"];
     }
@@ -358,7 +366,9 @@ function populateRegisters(reg) {
 
 function removeInitialZero() {
     for (const REG in registers) {
-        console.log(registers[REG]["x"]);
+        if (registers[REG]["x"] && registers[REG]["x"][0] == "0" && !registers[REG]["x"].includes(".")) {
+            registers[REG]["x"] = registers[REG]["x"][0].slice(1,registers[REG]["x"].length-1);
+        }
     }
 }
 
