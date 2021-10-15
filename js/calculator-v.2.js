@@ -30,7 +30,8 @@ var re = document.getElementById("result_electronics"),
     buttons = document.querySelectorAll(".btn"),
     displayLEDcontainer = document.getElementById("digits_container"),
     displayLEDs = displayLEDcontainer.children,
-    numberOfLEDs = 14;
+    numberOfLEDs = 14,
+    clear_X_forNewNumber = false;
 const BUTTON_EVENT_FUNCTIONS = {
     "add": function() {
         setOperator("add");
@@ -163,11 +164,8 @@ function checkForDecimalIn_X_() {
 }
 
 function scientificNotation(v) {
-    // console.log("Length:", v.length);
-    // console.log("X:", registers._X_["x"]);
-    if (v > Math.pow(10, 10)) {
-        console.log("EE9:", parseFloat(v).toExponential(9));
-        console.log("P9", parseFloat(v).toPrecision(10));
+    if (v.length >= 10) {
+        v = parseFloat(v).toPrecision(10);
     }
     return v;
 }
@@ -277,11 +275,12 @@ function displayFlash() {
     // let tempUD = document.getElementById('digits_container').children;
     resetDisplay();
     setTimeout(function() {
-        print_X_ToDisplay(registers._X_["x"])
+        print_X_ToDisplay();
     }, 10);
 }
 
-function print_X_ToDisplay(v) {
+function print_X_ToDisplay() {
+    let v = scientificNotation(registers._X_["x"]);
     let vIndex = v.length;
     let shift = 2;
     for (let i = numberOfLEDs - 1; i >= 0; i--) {
@@ -309,25 +308,29 @@ function inputValue(v) {
     if (v == "." && checkForDecimalIn_X_() > -1) {
         return;
     }
-    /**
-     * 
-     */
 
     /**
      * REMOVE PLACEHOLDER ZERO IF EXISTS
      */
-    removeInitialZero();
+    if (v == "." && registers._X_["x"] != "0") {
+        removeInitialZero();
+    }
     /**
      * 
      */
-    registers._X_["x"] += v;
-    /**
-     * 
-     */
+    console.log(clear_X_forNewNumber);
+    if (clear_X_forNewNumber == false) {
+        registers._X_["x"] += v;
+    } else {
+        registers._X_["x"] = v;
+        clear_X_forNewNumber = false;
+    }
+    
+
     /**
      * UPDATE OTHER REGISTERS IF OPERATOR EXISTS
      */
-    if (registers._X_["operator"]) {
+    if (registers._X_["operator"] && clear_X_forNewNumber == true) {
         let o = registers._X_["operator"];
         let reg = (o == "add" || o == "subtract") ? "z" : "y";
         populateRegisters(reg);
@@ -335,9 +338,8 @@ function inputValue(v) {
     /**
      * 
      */
-    // scientificNotation(registers._X_["x"]);
     resetDisplay();
-    print_X_ToDisplay(scientificNotation(registers._X_["x"]));
+    print_X_ToDisplay();
 
     displayRegsiters();
 }
@@ -363,13 +365,16 @@ function populateRegisters(reg) {
         registers._Z_["x"] = registers._X_["x"];
         registers._Z_["z"] = registers._X_["z"];
     }
-    registers._X_["x"] = "";
+    (clear_X_forNewNumber == false) ? clear_X_forNewNumber = true : "";
+    console.log("Clear X?",clear_X_forNewNumber);
     displayRegsiters();
 }
 
 function clearRegisters() {
     for (let [k1, v1] of Object.entries(registers)) {
-        if (k1 == "_M_") {continue;}
+        if (k1 == "_M_") {
+            continue;
+        }
         for (let [k2, v2] of Object.entries(v1)) {
             registers[k1][k2] = "";
         }
