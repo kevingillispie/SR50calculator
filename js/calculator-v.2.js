@@ -42,7 +42,7 @@ const BUTTON_EVENT_FUNCTIONS = {
         console.log(Math.cos(registers._X_["x"]), true);
     },
     "clear": function() {
-        // clear(true);
+        clear();
     },
     "clear-entry": function() {
         registers._X_["x"] = "";
@@ -50,6 +50,7 @@ const BUTTON_EVENT_FUNCTIONS = {
     "d-r": function() {},
     "decimal": function() {
         inputValue(this.dataset.value);
+        console.log(displayLEDs);
     },
     "digit": function() {
         inputValue(this.dataset.value);
@@ -88,7 +89,7 @@ const BUTTON_EVENT_FUNCTIONS = {
     },
     "pi": function() {
         /**
-         * MANUAL INDICATES PI IS STORED 
+         * THE MANUAL INDICATES PI IS STORED 
          * "TO 13 SIGNIFICANT DIGITS (3.141592653590)" 
          * (PAGE 6)
          */
@@ -101,8 +102,8 @@ const BUTTON_EVENT_FUNCTIONS = {
         console.log(registers._X_["x"]);
     },
     "recall": function() {
-        console.log(registers._M_);
-        // clearTerms();
+        resetDisplay();
+        inputValue(registers._M_);
     },
     "reciprocal": function() {
         console.log(1 / registers._X_["x"], true);
@@ -117,14 +118,14 @@ const BUTTON_EVENT_FUNCTIONS = {
         console.log(Math.pow(registers._X_["x"], 2), true);
     },
     "store": function() {
-        (registers._X_) ? setregisters._M_(registers._X_): setregisters._M_("");
+        registers._M_ = registers._X_["x"];
         displayFlash();
     },
     "subtract": function() {
         setOperator("subtract");
     },
     "sum": function() {
-        setregisters._M_(registers._X_["x"] + registers._M_);
+        // setregisters._M_(registers._X_["x"] + registers._M_);
         console.log(registers._M_, true);
         // clearTerms();
         // toggleNewTerm();
@@ -143,12 +144,14 @@ const BUTTON_EVENT_FUNCTIONS = {
 /**
  * HELPER FUNCTIONs
  */
-function getSign(v) {
-    return Math.sign(parseFloat(v));
+function clear() {
+    clearRegisters();
+    resetDisplay();
+    inputValue(0);
 }
 
-function set_M_(value = "") {
-    registers._M_ = parseFloat(value);
+function getSign(v) {
+    return Math.sign(parseFloat(v));
 }
 
 function getValueStringLength() {
@@ -162,7 +165,7 @@ function checkForDecimalIn_X_() {
 function scientificNotation(v) {
     // console.log("Length:", v.length);
     // console.log("X:", registers._X_["x"]);
-    if (v > 10 ** 10) {
+    if (v > Math.pow(10, 10)) {
         console.log("EE9:", parseFloat(v).toExponential(9));
         console.log("P9", parseFloat(v).toPrecision(10));
     }
@@ -242,7 +245,7 @@ function powerOff() {
     setTimeout(() => {
         // clearUserDisplay();
         // clearTerms();
-        setregisters._M_("");
+        // setregisters._M_("");
     }, 25);
     buttons.forEach((btn) => {
         btn.removeEventListener("click", BUTTON_EVENT_FUNCTIONS[btn.getAttribute("name")]);
@@ -271,15 +274,14 @@ function resetDisplay() {
 }
 
 function displayFlash() {
-    let tempUD = displayLEDs;
+    // let tempUD = document.getElementById('digits_container').children;
     resetDisplay();
     setTimeout(function() {
-        displayLEDs = tempUD;
+        print_X_ToDisplay(registers._X_["x"])
     }, 10);
 }
 
 function print_X_ToDisplay(v) {
-    resetDisplay();
     let vIndex = v.length;
     let shift = 2;
     for (let i = numberOfLEDs - 1; i >= 0; i--) {
@@ -314,7 +316,7 @@ function inputValue(v) {
     /**
      * REMOVE PLACEHOLDER ZERO IF EXISTS
      */
-     removeInitialZero();
+    removeInitialZero();
     /**
      * 
      */
@@ -323,7 +325,7 @@ function inputValue(v) {
      * 
      */
     /**
-     * UPDATE OTHER REGISTERS IF OPERAND EXISTS
+     * UPDATE OTHER REGISTERS IF OPERATOR EXISTS
      */
     if (registers._X_["operator"]) {
         let o = registers._X_["operator"];
@@ -334,6 +336,7 @@ function inputValue(v) {
      * 
      */
     // scientificNotation(registers._X_["x"]);
+    resetDisplay();
     print_X_ToDisplay(scientificNotation(registers._X_["x"]));
 
     displayRegsiters();
@@ -364,10 +367,19 @@ function populateRegisters(reg) {
     displayRegsiters();
 }
 
+function clearRegisters() {
+    for (let [k1, v1] of Object.entries(registers)) {
+        if (k1 == "_M_") {continue;}
+        for (let [k2, v2] of Object.entries(v1)) {
+            registers[k1][k2] = "";
+        }
+    }
+}
+
 function removeInitialZero() {
     for (const REG in registers) {
         if (registers[REG]["x"] && registers[REG]["x"][0] == "0" && !registers[REG]["x"].includes(".")) {
-            registers[REG]["x"] = registers[REG]["x"][0].slice(1,registers[REG]["x"].length-1);
+            registers[REG]["x"] = registers[REG]["x"][0].slice(1, registers[REG]["x"].length - 1);
         }
     }
 }
