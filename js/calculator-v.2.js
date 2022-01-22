@@ -383,8 +383,8 @@ function clearRegisters() {
 
 function removeInitialZero() {
     for (const REG in registers) {
-        if (registers[REG]["x"] && registers[REG]["x"][0] == "0" && !registers[REG]["x"].includes(".")) {
-            registers[REG]["x"] = registers[REG]["x"][0].slice(1, registers[REG]["x"].length - 1);
+        if (REG != "_M_" && registers[REG]["x"][0] == "0" && registers[REG]["x"][1] != ".") {
+            registers[REG]["x"] = registers[REG]["x"][0].substr(1);
         }
     }
 }
