@@ -1,3 +1,38 @@
+class Operations {
+    constructor(...term) {
+        this.term1 = this.toNumber(term[0]);
+        this.term2 = this.toNumber(term[1]);
+        this.lastValue = registers._X_;
+    }
+    add() {
+        return this.term1 + this.term2;
+    }
+    divide() {
+        return this.term1 / this.term2;
+    }
+    eRaised() {
+        return Math.pow(Math.E, this.term1);
+    }
+    hypotenuse() {
+        return Math.hypot(this.term1, this.term2);
+    }
+    multiply() {
+        return this.term1 * this.term2;
+    }
+    subtract() {
+        return this.term1 - this.term2;
+    }
+    toNumber(n) {
+        return parseFloat(n);
+    }
+    xPower() {
+        return Math.pow(this.term2, this.term1);
+    }
+    xRoot() {
+        return this.term2 ** (1 / this.term1);
+    }
+}
+
 /**
  * @param {registers._X_} string  Input register
  * @param {registers._Y_} string  Process register
@@ -39,6 +74,7 @@ const BUTTON_EVENT_FUNCTIONS = {
     },
     "clear-entry": function () {
         registers._X_ = "";
+        inputValue(0);
     },
     "d-r": function () { },
     "decimal": function () {
@@ -53,7 +89,7 @@ const BUTTON_EVENT_FUNCTIONS = {
     },
     "ee": function () { },
     "equals": function () {
-        // getResult();
+        getResult();
     },
     "ex": function () {
         console.log(Math.pow(Math.E, registers._X_), true);
@@ -329,11 +365,11 @@ function inputValue(v) {
     /**
      * UPDATE OTHER REGISTERS IF OPERATOR EXISTS
      */
-    if (registers._X_ && clear_X_forNewNumber == true) {
-        let o = registers._X_;
-        let reg = (o == "add" || o == "subtract") ? "z" : "y";
-        populateRegisters(reg);
-    }
+    // if (registers._X_ && clear_X_forNewNumber == true) {
+    //     let o = registers._X_;
+    //     let reg = (o == "add" || o == "subtract") ? "z" : "y";
+    //     populateRegisters(reg);
+    // }
     /**
      * 
      */
@@ -344,12 +380,15 @@ function inputValue(v) {
 }
 
 function setOperator(o) {
-    if (o === "add" || o === "subtract") {
+    // TODO: COMPLETE PENDING OPERATION SOMEWHERE IN HERE
+    if ((o === "add" || o === "subtract") && (registers._Z_ == registers._X_ || !registers._Z_)) {
         registers.cumulative = o;
         populateRegisters("z");
-    } else {
+    } else if ((o === "multiply" || o === "divide") && (registers._Y_ == registers._X_ || !registers._Y_)) {
         registers.process = o;
         populateRegisters("y");
+    } else if (registers.process) {
+
     }
     errorCorrectionForOperators(o);
     displayRegisters();
@@ -376,7 +415,7 @@ function populateRegisters(reg) {
 
     (clear_X_forNewNumber == false) ? clear_X_forNewNumber = true : "";
     // console.log("Clear X?", clear_X_forNewNumber);
-    displayRegisters();
+    // displayRegisters();
 }
 
 function clearRegisters() {
@@ -393,6 +432,13 @@ function removeLeadingZero() {
         }
     }
 }
+
+function getResult(operation = "add") {
+    let result = new Operations(registers._X_, registers._Z_);
+    registers._X_ = result[operation]();
+}
+
+/////////////////////////////////////////////////
 
 function displayRegisters() {
     console.log("X", registers._X_);
