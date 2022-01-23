@@ -1,27 +1,18 @@
 /**
- * @param {registers._X_} object  Input register
- * @param {registers._Y_} object  Process register
- * @param {registers._Z_} object  Cumulative register
+ * @param {registers._X_} string  Input register
+ * @param {registers._Y_} string  Process register
+ * @param {registers._Z_} string  Cumulative register
  * @param {registers._M_} float   Memory register for storage
+ * @param {registers.process} string 
+ * @param {registers.cumulative} string 
  */
 var registers = {
-    _X_: {
-        "x": "",
-        "y": "",
-        "z": "",
-        "operator": ""
-    },
-    _Y_: {
-        "x": "",
-        "y": "",
-        "operator": ""
-    },
-    _Z_: {
-        "x": "",
-        "z": "",
-        "operator": ""
-    },
-    _M_: parseFloat(0)
+    _X_: "",
+    _Y_: "",
+    _Z_: "",
+    _M_: parseFloat(0),
+    process: "",
+    cumulative: ""
 };
 /***/
 var re = document.getElementById("result_electronics"),
@@ -32,63 +23,64 @@ var re = document.getElementById("result_electronics"),
     displayLEDs = displayLEDcontainer.children,
     numberOfLEDs = 14,
     clear_X_forNewNumber = false;
+    
 const BUTTON_EVENT_FUNCTIONS = {
-    "add": function() {
+    "add": function () {
         setOperator("add");
     },
-    "arc": function() {
+    "arc": function () {
         setOperator("arc");
     },
-    "cos": function() {
-        console.log(Math.cos(registers._X_["x"]), true);
+    "cos": function () {
+        console.log(Math.cos(registers._X_), true);
     },
-    "clear": function() {
+    "clear": function () {
         clear();
     },
-    "clear-entry": function() {
-        registers._X_["x"] = "";
+    "clear-entry": function () {
+        registers._X_ = "";
     },
-    "d-r": function() {},
-    "decimal": function() {
+    "d-r": function () { },
+    "decimal": function () {
         inputValue(this.dataset.value);
-        console.log(displayLEDs);
+        // console.log(displayLEDs);
     },
-    "digit": function() {
+    "digit": function () {
         inputValue(this.dataset.value);
     },
-    "divide": function() {
+    "divide": function () {
         setOperator("divide");
     },
-    "ee": function() {},
-    "equals": function() {
+    "ee": function () { },
+    "equals": function () {
         // getResult();
     },
-    "ex": function() {
-        console.log(Math.pow(Math.E, registers._X_["x"]), true);
+    "ex": function () {
+        console.log(Math.pow(Math.E, registers._X_), true);
     },
-    "exchange": function() {
-        if (registers._Y_["y"]) {
-            let y = registers._Y_["y"];
-            registers._Y_["y"] = registers._X_["x"];
-            registers._X_["x"] = y;
+    "exchange": function () {
+        if (registers._Y_) {
+            let y = registers._Y_;
+            registers._Y_ = registers._X_;
+            registers._X_ = y;
         }
     },
-    "factorial": function() {
-        console.log(factorial(Math.trunc(registers._X_["x"])), true);
+    "factorial": function () {
+        console.log(factorial(Math.trunc(registers._X_)), true);
     },
-    "hyp": function() {
+    "hyp": function () {
         setOperator("hyperbolic");
     },
-    "multiply": function() {
+    "multiply": function () {
         setOperator("multiply");
     },
-    "lnx": function() {
-        console.log(Math.log(registers._X_["x"]), true);
+    "lnx": function () {
+        console.log(Math.log(registers._X_), true);
     },
-    "log": function() {
-        console.log(Math.log10(registers._X_["x"]), true);
+    "log": function () {
+        console.log(Math.log10(registers._X_), true);
     },
-    "pi": function() {
+    "pi": function () {
         /**
          * THE MANUAL INDICATES PI IS STORED 
          * "TO 13 SIGNIFICANT DIGITS (3.141592653590)" 
@@ -97,48 +89,48 @@ const BUTTON_EVENT_FUNCTIONS = {
         // inputValue(Math.PI.toPrecision(13));
         console.log(Math.PI.toPrecision(13));
     },
-    "pos-neg": function() {
-        registers._X_["x"] = registers._X_["x"] * -1;
-        // updateTerm(registers._X_["x"]);
-        console.log(registers._X_["x"]);
+    "pos-neg": function () {
+        registers._X_ = registers._X_ * -1;
+        // updateTerm(registers._X_);
+        // console.log(registers._X_);
     },
-    "recall": function() {
+    "recall": function () {
         resetDisplay();
         inputValue(registers._M_);
     },
-    "reciprocal": function() {
-        console.log(1 / registers._X_["x"], true);
+    "reciprocal": function () {
+        console.log(1 / registers._X_, true);
     },
-    "sin": function() {
-        console.log(Math.sin(registers._X_["x"]), true);
+    "sin": function () {
+        console.log(Math.sin(registers._X_), true);
     },
-    "sqrt": function() {
-        console.log(Math.sqrt(registers._X_["x"]), true);
+    "sqrt": function () {
+        console.log(Math.sqrt(registers._X_), true);
     },
-    "squared": function() {
-        console.log(Math.pow(registers._X_["x"], 2), true);
+    "squared": function () {
+        console.log(Math.pow(registers._X_, 2), true);
     },
-    "store": function() {
-        registers._M_ = registers._X_["x"];
+    "store": function () {
+        registers._M_ = registers._X_;
         displayFlash();
     },
-    "subtract": function() {
+    "subtract": function () {
         setOperator("subtract");
     },
-    "sum": function() {
-        // setregisters._M_(registers._X_["x"] + registers._M_);
+    "sum": function () {
+        // setregisters._M_(registers._X_ + registers._M_);
         console.log(registers._M_, true);
         // clearTerms();
         // toggleNewTerm();
         // updateNewTermregisters._X_();
     },
-    "tan": function() {
-        console.log(Math.tan(registers._X_["x"]), true);
+    "tan": function () {
+        console.log(Math.tan(registers._X_), true);
     },
-    "xpower": function() {
+    "xpower": function () {
         setOperator("xPower");
     },
-    "xroot": function() {
+    "xroot": function () {
         setOperator("xRoot");
     }
 };
@@ -149,6 +141,7 @@ function clear() {
     clearRegisters();
     resetDisplay();
     inputValue(0);
+    displayFlash();
 }
 
 function getSign(v) {
@@ -156,11 +149,11 @@ function getSign(v) {
 }
 
 function getValueStringLength() {
-    return registers._X_["x"].length;
+    return registers._X_.length;
 }
 
 function checkForDecimalIn_X_() {
-    return registers._X_["x"].search(/\./);
+    return registers._X_.search(/\./);
 }
 
 function scientificNotation(v) {
@@ -168,6 +161,10 @@ function scientificNotation(v) {
         v = parseFloat(v).toPrecision(10);
     }
     return v;
+}
+
+function clear_M_() {
+    registers._M_ = parseFloat(0);
 }
 /**
  * 
@@ -185,7 +182,7 @@ function digitDisplayElement(value = "") {
     return DIV;
 }
 
-! function() {
+! function () {
     for (let i = 0; i < numberOfLEDs; i++) {
         re.insertAdjacentHTML('afterbegin', `
             <div class="digit-bg">
@@ -206,16 +203,16 @@ function digitDisplayElement(value = "") {
         displayLEDcontainer.insertAdjacentElement("beforeend", digitDisplayElement());
     }
 
-    powerSwitch.addEventListener("click", function() {
+    powerSwitch.addEventListener("click", function () {
         this.classList.toggle("on");
         if (this.classList.contains("on")) {
             setTimeout(powerOn, 100);
-        } else if (this.dataset.value == "power") {
+        } else {
             setTimeout(powerOff, 100);
         }
     });
 
-    radDegSwitch.addEventListener("click", function() {
+    radDegSwitch.addEventListener("click", function () {
         this.classList.toggle("on");
     });
 }();
@@ -243,7 +240,7 @@ function powerOff() {
     setTimeout(() => {
         // clearUserDisplay();
         // clearTerms();
-        // setregisters._M_("");
+        clear_M_();
     }, 25);
     buttons.forEach((btn) => {
         btn.removeEventListener("click", BUTTON_EVENT_FUNCTIONS[btn.getAttribute("name")]);
@@ -274,15 +271,17 @@ function resetDisplay() {
 function displayFlash() {
     // let tempUD = document.getElementById('digits_container').children;
     resetDisplay();
-    setTimeout(function() {
+    setTimeout(function () {
         print_X_ToDisplay();
     }, 10);
 }
 
+// ONLY DISPLAY X REGISTER
 function print_X_ToDisplay() {
-    let v = scientificNotation(registers._X_["x"]);
+    let v = scientificNotation(registers._X_);
     let vIndex = v.length;
     let shift = 2;
+    // console.log("v", v);
     for (let i = numberOfLEDs - 1; i >= 0; i--) {
         if (v[vIndex] == ".") {
             document.querySelectorAll(".result")[i - 2].classList.add("decimal");
@@ -312,26 +311,26 @@ function inputValue(v) {
     /**
      * REMOVE PLACEHOLDER ZERO IF EXISTS
      */
-    if (v == "." && registers._X_["x"] != "0") {
-        removeInitialZero();
+    if (v != ".") {
+        removeLeadingZero();
     }
     /**
      * 
      */
-    console.log(clear_X_forNewNumber);
+
     if (clear_X_forNewNumber == false) {
-        registers._X_["x"] += v;
+        registers._X_ += v;
     } else {
-        registers._X_["x"] = v;
+        registers._X_ = v;
         clear_X_forNewNumber = false;
     }
-    
+
 
     /**
      * UPDATE OTHER REGISTERS IF OPERATOR EXISTS
      */
-    if (registers._X_["operator"] && clear_X_forNewNumber == true) {
-        let o = registers._X_["operator"];
+    if (registers._X_ && clear_X_forNewNumber == true) {
+        let o = registers._X_;
         let reg = (o == "add" || o == "subtract") ? "z" : "y";
         populateRegisters(reg);
     }
@@ -341,58 +340,65 @@ function inputValue(v) {
     resetDisplay();
     print_X_ToDisplay();
 
-    displayRegsiters();
+    displayRegisters();
 }
 
 function setOperator(o) {
-    registers._X_["operator"] = o;
     if (o === "add" || o === "subtract") {
-        registers._Z_["operator"] = o;
+        registers.cumulative = o;
         populateRegisters("z");
     } else {
-        registers._Y_["operator"] = o;
+        registers.process = o;
         populateRegisters("y");
     }
-    displayRegsiters();
+    errorCorrectionForOperators(o);
+    displayRegisters();
+}
+
+function errorCorrectionForOperators(o) {
+    if ((o == "add" || o == "subtract") && registers.process != "") {
+        registers._Z_ = registers._Y_;
+        registers._Y_ = "";
+        registers.process = "";
+    } else if ((o == "multiply" || o == "divide") && registers.cumulative != "") {
+        registers._Y_ = registers._Z_;
+        registers._Z_ = "";
+        registers.cumulative = "";
+    }
 }
 
 function populateRegisters(reg) {
-    registers._X_[reg] = registers._X_["x"];
     if (reg == "y") {
-        registers._Y_["x"] = registers._X_["x"];
-        registers._Y_["y"] = registers._X_["y"];
+        registers._Y_ = registers._X_;
     } else {
-        registers._Z_["x"] = registers._X_["x"];
-        registers._Z_["z"] = registers._X_["z"];
+        registers._Z_ = registers._X_;
     }
+
     (clear_X_forNewNumber == false) ? clear_X_forNewNumber = true : "";
-    console.log("Clear X?",clear_X_forNewNumber);
-    displayRegsiters();
+    // console.log("Clear X?", clear_X_forNewNumber);
+    displayRegisters();
 }
 
 function clearRegisters() {
-    for (let [k1, v1] of Object.entries(registers)) {
-        if (k1 == "_M_") {
-            continue;
-        }
-        for (let [k2, v2] of Object.entries(v1)) {
-            registers[k1][k2] = "";
+    for (let reg in registers) {
+        if (reg == "_M_") {continue;}
+        registers[reg] = "";
+    }
+}
+
+function removeLeadingZero() {
+    for (let reg in registers) {
+        if (reg != "_M_" && registers[reg][0] == "0" && registers[reg][1] != ".") {
+            registers[reg] = registers[reg][0].substr(1);
         }
     }
 }
 
-function removeInitialZero() {
-    for (const REG in registers) {
-        if (REG != "_M_" && registers[REG]["x"][0] == "0" && registers[REG]["x"][1] != ".") {
-            registers[REG]["x"] = registers[REG]["x"][0].substr(1);
-        }
-    }
-}
-
-function displayRegsiters() {
+function displayRegisters() {
     console.log("X", registers._X_);
     console.log("Y", registers._Y_);
     console.log("Z", registers._Z_);
     console.log("M", registers._M_);
-    removeInitialZero();
+    console.log("process", registers.process);
+    console.log("cumulative", registers.cumulative);
 }
