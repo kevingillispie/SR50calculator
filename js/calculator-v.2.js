@@ -13,14 +13,51 @@ class Operations {
     eRaised() {
         return Math.pow(Math.E, this.term1);
     }
+    factorial() {
+        let n = Math.trunc(this.term1);
+        let f = [1];
+        if (Math.sign(n) == -1) {
+            return n;
+        }
+        for (let i = 2; i <= n; i++) {
+            f.push(i);
+        }
+        return f.reduce(function (a, b) {
+            return a * b;
+        });
+    }
     hypotenuse() {
         return Math.hypot(this.term1, this.term2);
+    }
+    lnx() {
+        return Math.log(this.term1);
+    }
+    log() {
+        return Math.log10(this.term1);
     }
     multiply() {
         return this.term1 * this.term2;
     }
+    posNeg() {
+        return this.term1 * -1;
+    }
+    reciprocal() {
+        return 1 / this.term1;
+    }
+    sine() {
+       return Math.sin(this.term1);
+    }
+    sqrt() {
+        return Math.sqrt(this.term1);
+    }
+    squared() {
+        return Math.pow(this.term1, 2);
+    }
     subtract() {
         return this.term1 - this.term2;
+    }
+    tan() {
+        return Math.tan(this.term1);
     }
     toNumber(n) {
         return parseFloat(n);
@@ -91,10 +128,8 @@ const BUTTON_EVENT_FUNCTIONS = {
     "equals": function () {
         getResult();
     },
-    "ex": function () {
-        let exponent = registers._X_;
-        clearAllRegisters();
-        inputValue(Math.pow(Math.E, exponent));
+    "eRaised": function () {
+        immediateOperator("eRaised");
     },
     "exchange": function () {
         if (registers._Y_) {
@@ -104,20 +139,7 @@ const BUTTON_EVENT_FUNCTIONS = {
         }
     },
     "factorial": function () {
-        let factor = Math.trunc(registers._X_);
-        clearAllRegisters();
-        inputValue(factorial(factor));
-        function factorial(n, f = [1]) {
-            if (Math.sign(n) == -1) {
-                return n;
-            }
-            for (let i = 2; i <= n; i++) {
-                f.push(i);
-            }
-            return f.reduce(function (a, b) {
-                return a * b;
-            });
-        }
+        immediateOperator("factorial");
     },
     "hyp": function () {
         setOperator("hyperbolic");
@@ -126,14 +148,10 @@ const BUTTON_EVENT_FUNCTIONS = {
         setOperator("multiply");
     },
     "lnx": function () {
-        registers._X_ = Math.log(registers._X_);
-        print_X_ToDisplay();
-        displayFlash();
+        immediateOperator("lnx");
     },
     "log": function () {
-        registers._X_ = Math.log10(registers._X_);
-        print_X_ToDisplay();
-        displayFlash();
+        immediateOperator("log");
     },
     "pi": function () {
         /**
@@ -143,30 +161,24 @@ const BUTTON_EVENT_FUNCTIONS = {
          */
         inputValue(Math.PI.toPrecision(13));
     },
-    "pos-neg": function () {
-        registers._X_ = registers._X_ * -1;
-        print_X_ToDisplay();
-        displayFlash();
+    "posNeg": function () {
+        immediateOperator("log");
     },
     "recall": function () {
         resetDisplay();
         inputValue(registers._M_);
     },
     "reciprocal": function () {
-        registers._X_ = 1 / registers._X_;
-        print_X_ToDisplay();
-        displayFlash();
+        immediateOperator("reciprocal");
     },
-    "sin": function () {
-        console.log(Math.sin(registers._X_), true);
+    "sine": function () {
+        immediateOperator("sine");
     },
     "sqrt": function () {
-        console.log(Math.sqrt(registers._X_), true);
+        immediateOperator("sqrt");
     },
     "squared": function () {
-        registers._X_ = Math.pow(registers._X_);
-        print_X_ToDisplay();
-        displayFlash();
+        immediateOperator("squared");
     },
     "store": function () {
         registers._M_ = registers._X_;
@@ -183,7 +195,7 @@ const BUTTON_EVENT_FUNCTIONS = {
         // updateNewTermregisters._X_();
     },
     "tan": function () {
-        console.log(Math.tan(registers._X_), true);
+        immediateOperator("tan");
     },
     "xpower": function () {
         setOperator("xPower");
@@ -419,6 +431,14 @@ function setOperator(o) {
     displayRegisters();
 }
 
+function immediateOperator(operation) {
+    let result = new Operations(registers._X_);
+    registers._X_ = result[operation]();
+    print_X_ToDisplay();
+    displayFlash();
+
+}
+
 // function userErrorCorrectionForOperators(o) {
 //     if ((o == "add" || o == "subtract")) {
 //         registers._Z_ = registers._X_;
@@ -471,17 +491,15 @@ function getResult() {
         result = new Operations(registers._Y_, registers._X_);
         registers.process = "";
         registers._Y_ = "";
-        registers._X_ = "";
-        inputValue(result[operation]());
     }
     if (registers.cumulative) {
         operation = registers.cumulative;
         result = new Operations(registers._Z_, registers._X_);
         registers.cumulative = "";
         registers._Z_ = "";
-        registers._X_ = "";
-        inputValue(result[operation]());
     }
+    registers._X_ = "";
+    inputValue(result[operation]());
     isFirstOperand = false;
 }
 

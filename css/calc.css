@@ -505,7 +505,7 @@ button {
     margin-left: -29.5px;
 }
 
-.function_keys .btn.ex::after {
+.function_keys .btn.eRaised::after {
     margin-left: -23px;
 }
 
