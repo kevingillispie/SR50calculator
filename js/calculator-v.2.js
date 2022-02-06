@@ -403,20 +403,14 @@ function inputValue(v) {
 
 function setOperator(o) {
     // TODO: COMPLETE PENDING OPERATION SOMEWHERE IN HERE
-    if (registers._X_ != "" && registers._Y_ != "") {
+
+    if (isFirstOperand == false) {
         getResult();
-        // return;
     }
     if (o == "multiply" || o == "divide") {
-        if (registers.process != "" && isFirstOperand == false) {
-            getResult();
-        }
         registers.process = o;
         populateRegisters("y");
     } else if (o == "add" || o == "subtract") {
-        if (registers.cumulative != "" && isFirstOperand == false) {
-            getResult();
-        }
         registers.cumulative = o;
         populateRegisters("z");
     }
