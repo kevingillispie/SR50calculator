@@ -2,7 +2,7 @@ class Operations {
     constructor(...term) {
         this.term1 = this.toNumber(term[0]);
         this.term2 = this.toNumber(term[1]);
-        this.lastValue = registers._X_;
+        // this.lastValue = registers._X_;
     }
     add() {
         return this.term1 + this.term2;
@@ -57,8 +57,9 @@ var re = document.getElementById("result_electronics"),
     displayLEDcontainer = document.getElementById("digits_container"),
     displayLEDs = displayLEDcontainer.children,
     numberOfLEDs = 14,
-    clear_X_forNewNumber = false;
-    
+    clear_X_forNewNumber = false,
+    isFirstOperand = true;
+
 const BUTTON_EVENT_FUNCTIONS = {
     "add": function () {
         setOperator("add");
@@ -79,7 +80,6 @@ const BUTTON_EVENT_FUNCTIONS = {
     "d-r": function () { },
     "decimal": function () {
         inputValue(this.dataset.value);
-        // console.log(displayLEDs);
     },
     "digit": function () {
         inputValue(this.dataset.value);
@@ -92,7 +92,9 @@ const BUTTON_EVENT_FUNCTIONS = {
         getResult();
     },
     "ex": function () {
-        console.log(Math.pow(Math.E, registers._X_), true);
+        let exponent = registers._X_;
+        clearAllRegisters();
+        inputValue(Math.pow(Math.E, exponent));
     },
     "exchange": function () {
         if (registers._Y_) {
@@ -102,7 +104,20 @@ const BUTTON_EVENT_FUNCTIONS = {
         }
     },
     "factorial": function () {
-        console.log(factorial(Math.trunc(registers._X_)), true);
+        let factor = Math.trunc(registers._X_);
+        clearAllRegisters();
+        inputValue(factorial(factor));
+        function factorial(n, f = [1]) {
+            if (Math.sign(n) == -1) {
+                return n;
+            }
+            for (let i = 2; i <= n; i++) {
+                f.push(i);
+            }
+            return f.reduce(function (a, b) {
+                return a * b;
+            });
+        }
     },
     "hyp": function () {
         setOperator("hyperbolic");
@@ -111,10 +126,14 @@ const BUTTON_EVENT_FUNCTIONS = {
         setOperator("multiply");
     },
     "lnx": function () {
-        console.log(Math.log(registers._X_), true);
+        registers._X_ = Math.log(registers._X_);
+        print_X_ToDisplay();
+        displayFlash();
     },
     "log": function () {
-        console.log(Math.log10(registers._X_), true);
+        registers._X_ = Math.log10(registers._X_);
+        print_X_ToDisplay();
+        displayFlash();
     },
     "pi": function () {
         /**
@@ -122,20 +141,21 @@ const BUTTON_EVENT_FUNCTIONS = {
          * "TO 13 SIGNIFICANT DIGITS (3.141592653590)" 
          * (PAGE 6)
          */
-        // inputValue(Math.PI.toPrecision(13));
-        console.log(Math.PI.toPrecision(13));
+        inputValue(Math.PI.toPrecision(13));
     },
     "pos-neg": function () {
         registers._X_ = registers._X_ * -1;
-        // updateTerm(registers._X_);
-        // console.log(registers._X_);
+        print_X_ToDisplay();
+        displayFlash();
     },
     "recall": function () {
         resetDisplay();
         inputValue(registers._M_);
     },
     "reciprocal": function () {
-        console.log(1 / registers._X_, true);
+        registers._X_ = 1 / registers._X_;
+        print_X_ToDisplay();
+        displayFlash();
     },
     "sin": function () {
         console.log(Math.sin(registers._X_), true);
@@ -144,7 +164,9 @@ const BUTTON_EVENT_FUNCTIONS = {
         console.log(Math.sqrt(registers._X_), true);
     },
     "squared": function () {
-        console.log(Math.pow(registers._X_, 2), true);
+        registers._X_ = Math.pow(registers._X_);
+        print_X_ToDisplay();
+        displayFlash();
     },
     "store": function () {
         registers._M_ = registers._X_;
@@ -174,8 +196,7 @@ const BUTTON_EVENT_FUNCTIONS = {
  * HELPER FUNCTIONs
  */
 function clear() {
-    clearRegisters();
-    resetDisplay();
+    clearAllRegisters();
     inputValue(0);
     displayFlash();
 }
@@ -199,7 +220,7 @@ function scientificNotation(v) {
     return v;
 }
 
-function clear_M_() {
+function reset_M_() {
     registers._M_ = parseFloat(0);
 }
 /**
@@ -272,22 +293,19 @@ function powerOn() {
 
 function powerOff() {
     // clearFlashingNines();
-    powerFlash();
-    setTimeout(() => {
-        // clearUserDisplay();
-        // clearTerms();
-        clear_M_();
-    }, 25);
     buttons.forEach((btn) => {
         btn.removeEventListener("click", BUTTON_EVENT_FUNCTIONS[btn.getAttribute("name")]);
         btn.removeEventListener("click", BUTTON_EVENT_FUNCTIONS.digit);
     });
+    setTimeout(() => {
+        clearAllRegisters();
+        resetDisplay();
+        reset_M_();
+    }, 25);
 }
 
 function powerFlash() {
-    // clearUserDisplay();
-    // resetregisters._X_Array(1, false);
-    // printResetDisplay();
+
 }
 /**
  * /END
@@ -298,26 +316,38 @@ function powerFlash() {
  */
 
 function resetDisplay() {
-    for (const LED of displayLEDs) {
+    let leds = document.querySelectorAll(".result");
+    for (const LED of leds) {
         LED.classList.remove("decimal");
         LED.innerText = "";
     }
+
 }
 
 function displayFlash() {
-    // let tempUD = document.getElementById('digits_container').children;
     resetDisplay();
     setTimeout(function () {
         print_X_ToDisplay();
-    }, 10);
+    }, 50);
+}
+
+function setNegativeSign() {
+    let resultDigits = document.querySelectorAll(".result");
+    resultDigits.forEach(digit => {
+        if (digit.innerText == "-") {
+            resultDigits[0].innerText = digit.innerText;
+            digit.innerText = "";
+            return;
+        }
+    })
 }
 
 // ONLY DISPLAY X REGISTER
 function print_X_ToDisplay() {
+    registers._X_ = registers._X_.toString();
     let v = scientificNotation(registers._X_);
     let vIndex = v.length;
     let shift = 2;
-    // console.log("v", v);
     for (let i = numberOfLEDs - 1; i >= 0; i--) {
         if (v[vIndex] == ".") {
             document.querySelectorAll(".result")[i - 2].classList.add("decimal");
@@ -327,6 +357,7 @@ function print_X_ToDisplay() {
         }
         vIndex--;
     }
+    setNegativeSign();
 }
 /**
  * 
@@ -360,67 +391,71 @@ function inputValue(v) {
         registers._X_ = v;
         clear_X_forNewNumber = false;
     }
-
-
-    /**
-     * UPDATE OTHER REGISTERS IF OPERATOR EXISTS
-     */
-    // if (registers._X_ && clear_X_forNewNumber == true) {
-    //     let o = registers._X_;
-    //     let reg = (o == "add" || o == "subtract") ? "z" : "y";
-    //     populateRegisters(reg);
-    // }
-    /**
-     * 
-     */
-    resetDisplay();
-    print_X_ToDisplay();
-
+    if (registers._Y_ == "" && registers._Z_ == "") {
+        isFirstOperand = true;
+    } else {
+        isFirstOperand = false;
+    }
+    // print_X_ToDisplay();
+    displayFlash();
     displayRegisters();
 }
 
 function setOperator(o) {
     // TODO: COMPLETE PENDING OPERATION SOMEWHERE IN HERE
-    if ((o === "add" || o === "subtract") && (registers._Z_ == registers._X_ || !registers._Z_)) {
-        registers.cumulative = o;
-        populateRegisters("z");
-    } else if ((o === "multiply" || o === "divide") && (registers._Y_ == registers._X_ || !registers._Y_)) {
+    if (registers._X_ != "" && registers._Y_ != "") {
+        getResult();
+        // return;
+    }
+    if (o == "multiply" || o == "divide") {
+        if (registers.process != "" && isFirstOperand == false) {
+            getResult();
+        }
         registers.process = o;
         populateRegisters("y");
-    } else if (registers.process) {
-
+    } else if (o == "add" || o == "subtract") {
+        if (registers.cumulative != "" && isFirstOperand == false) {
+            getResult();
+        }
+        registers.cumulative = o;
+        populateRegisters("z");
     }
-    errorCorrectionForOperators(o);
+    // print_X_ToDisplay();
+    displayFlash();
     displayRegisters();
 }
 
-function errorCorrectionForOperators(o) {
-    if ((o == "add" || o == "subtract") && registers.process != "") {
-        registers._Z_ = registers._Y_;
-        registers._Y_ = "";
-        registers.process = "";
-    } else if ((o == "multiply" || o == "divide") && registers.cumulative != "") {
-        registers._Y_ = registers._Z_;
-        registers._Z_ = "";
-        registers.cumulative = "";
-    }
-}
+// function userErrorCorrectionForOperators(o) {
+//     if ((o == "add" || o == "subtract")) {
+//         registers._Z_ = registers._X_;
+//         // registers.process = "";
+//     } else if ((o == "multiply" || o == "divide")) {
+//         registers._Y_ = registers._X_;
+//         // registers.cumulative = "";
+//     }
+// }
 
 function populateRegisters(reg) {
     if (reg == "y") {
         registers._Y_ = registers._X_;
+        if (isFirstOperand == true) {
+            registers._Z_ = "";
+            registers.cumulative = "";
+        }
     } else {
         registers._Z_ = registers._X_;
+        if (isFirstOperand == true) {
+            registers._Y_ = "";
+            registers.process = "";
+        }
     }
 
     (clear_X_forNewNumber == false) ? clear_X_forNewNumber = true : "";
-    // console.log("Clear X?", clear_X_forNewNumber);
-    // displayRegisters();
 }
 
-function clearRegisters() {
+function clearAllRegisters() {
     for (let reg in registers) {
-        if (reg == "_M_") {continue;}
+        if (reg == "_M_") { continue; }
         registers[reg] = "";
     }
 }
@@ -433,9 +468,27 @@ function removeLeadingZero() {
     }
 }
 
-function getResult(operation = "add") {
-    let result = new Operations(registers._X_, registers._Z_);
-    registers._X_ = result[operation]();
+function getResult() {
+    displayFlash();
+    if (isFirstOperand == true) { return }
+    let result, operation;
+    if (registers.process) {
+        operation = registers.process;
+        result = new Operations(registers._Y_, registers._X_);
+        registers.process = "";
+        registers._Y_ = "";
+        registers._X_ = "";
+        inputValue(result[operation]());
+    }
+    if (registers.cumulative) {
+        operation = registers.cumulative;
+        result = new Operations(registers._Z_, registers._X_);
+        registers.cumulative = "";
+        registers._Z_ = "";
+        registers._X_ = "";
+        inputValue(result[operation]());
+    }
+    isFirstOperand = false;
 }
 
 /////////////////////////////////////////////////
@@ -447,4 +500,6 @@ function displayRegisters() {
     console.log("M", registers._M_);
     console.log("process", registers.process);
     console.log("cumulative", registers.cumulative);
+    console.log("First Operand", isFirstOperand);
+    console.log("-----------------");
 }
