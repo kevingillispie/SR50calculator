@@ -107,6 +107,7 @@ var re = document.getElementById("result_electronics"),
     numberOfLEDs = 14,
     clear_X_forNewNumber = false,
     isFirstOperand = true,
+    isPiPressed = false,
     processes = ["multiply", "divide", "xPower", "xRoot"],
     degRad = "deg";
 
@@ -179,6 +180,7 @@ const BUTTON_EVENT_FUNCTIONS = {
          * (PAGE 6)
          */
         inputValue(Math.PI.toPrecision(13));
+        isPiPressed = true;
     },
     "posNeg": function () {
         immediateOperator("log");
@@ -404,6 +406,7 @@ function print_X_ToDisplay() {
  */
 
 function inputValue(v) {
+    userErrorCorrection();
     /**
      * DECIMAL CHECK
      */
@@ -468,15 +471,12 @@ function immediateOperator(operation) {
     displayRegisters();
 }
 
-// function userErrorCorrectionForOperators(o) {
-//     if ((o == "add" || o == "subtract")) {
-//         registers._Z_ = registers._X_;
-//         // registers.process = "";
-//     } else if ((o == "multiply" || o == "divide")) {
-//         registers._Y_ = registers._X_;
-//         // registers.cumulative = "";
-//     }
-// }
+function userErrorCorrection(input) {
+    if (isPiPressed == true) {
+        isPiPressed = false;
+        clear_X_forNewNumber = true;
+    }
+}
 
 function populateRegisters(reg) {
     if (reg == "y") {
