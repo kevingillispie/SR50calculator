@@ -170,7 +170,7 @@ const BUTTON_EVENT_FUNCTIONS = {
     "clear-entry": function() {
         clear(false);
     },
-    "d-r": function() {},
+    "degRad": function() {},
     "decimal": function() {
         if (displayValue.indexOf(".") == -1) {
             updateDisplayValue(this.dataset.value, false);

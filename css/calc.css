@@ -501,7 +501,7 @@ button {
 }
 
 .function_keys .btn.hyp::after,
-.function_keys .btn.d-r::after {
+.function_keys .btn.degRad::after {
     margin-left: -29.5px;
 }
 

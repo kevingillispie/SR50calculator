@@ -7,6 +7,18 @@ class Operations {
     add() {
         return this.term1 + this.term2;
     }
+    cos() {
+        return Math.cos(this.term1);
+    }
+    degRad() {
+        console.log("degRad:", degRad);
+        if (degRad == "deg") {
+            degRad = "rad";
+            return (this.term1 * Math.PI) / 180;
+        }
+        degRad = "deg";
+        return (180 * Math.PI) / (this.term1 * Math.PI);
+    }
     divide() {
         return this.term1 / this.term2;
     }
@@ -14,8 +26,7 @@ class Operations {
         return Math.pow(Math.E, this.term1);
     }
     factorial() {
-        let n = Math.trunc(this.term1);
-        let f = [1];
+        let n = Math.trunc(this.term1), f = [1];
         if (Math.sign(n) == -1) {
             return n;
         }
@@ -45,7 +56,7 @@ class Operations {
         return 1 / this.term1;
     }
     sine() {
-       return Math.sin(this.term1);
+        return Math.sin(this.term1);
     }
     sqrt() {
         return Math.sqrt(this.term1);
@@ -95,7 +106,9 @@ var re = document.getElementById("result_electronics"),
     displayLEDs = displayLEDcontainer.children,
     numberOfLEDs = 14,
     clear_X_forNewNumber = false,
-    isFirstOperand = true;
+    isFirstOperand = true,
+    processes = ["multiply", "divide", "xPower", "xRoot"],
+    degRad = "deg";
 
 const BUTTON_EVENT_FUNCTIONS = {
     "add": function () {
@@ -105,7 +118,7 @@ const BUTTON_EVENT_FUNCTIONS = {
         setOperator("arc");
     },
     "cos": function () {
-        console.log(Math.cos(registers._X_), true);
+        immediateOperator("cos");
     },
     "clear": function () {
         clear();
@@ -114,7 +127,13 @@ const BUTTON_EVENT_FUNCTIONS = {
         registers._X_ = "";
         inputValue(0);
     },
-    "d-r": function () { },
+    "degRad": function () {
+        // if (m == "deg") {
+        immediateOperator("degRad");
+        // } else {
+
+        // }
+    },
     "decimal": function () {
         inputValue(this.dataset.value);
     },
@@ -182,7 +201,7 @@ const BUTTON_EVENT_FUNCTIONS = {
     },
     "store": function () {
         registers._M_ = registers._X_;
-        displayFlash();
+        displayBlink();
     },
     "subtract": function () {
         setOperator("subtract");
@@ -197,10 +216,10 @@ const BUTTON_EVENT_FUNCTIONS = {
     "tan": function () {
         immediateOperator("tan");
     },
-    "xpower": function () {
+    "xPower": function () {
         setOperator("xPower");
     },
-    "xroot": function () {
+    "xRoot": function () {
         setOperator("xRoot");
     }
 };
@@ -208,9 +227,12 @@ const BUTTON_EVENT_FUNCTIONS = {
  * HELPER FUNCTIONs
  */
 function clear() {
+    displayBlink();
     clearAllRegisters();
     inputValue(0);
-    displayFlash();
+    setTimeout(function () {
+        document.getElementsByClassName("result")[11].classList.add("decimal");
+    }, 50);
 }
 
 function getSign(v) {
@@ -312,12 +334,15 @@ function powerOff() {
     setTimeout(() => {
         clearAllRegisters();
         resetDisplay();
+        powerFlash();
         reset_M_();
     }, 25);
 }
 
 function powerFlash() {
-
+    let display = document.querySelectorAll(".result");
+    display[1].innerText = "0";
+    setTimeout(resetDisplay, 10);
 }
 /**
  * /END
@@ -333,10 +358,9 @@ function resetDisplay() {
         LED.classList.remove("decimal");
         LED.innerText = "";
     }
-
 }
 
-function displayFlash() {
+function displayBlink() {
     resetDisplay();
     setTimeout(function () {
         print_X_ToDisplay();
@@ -409,25 +433,30 @@ function inputValue(v) {
         isFirstOperand = false;
     }
     // print_X_ToDisplay();
-    displayFlash();
+    displayBlink();
     displayRegisters();
 }
 
 function setOperator(o) {
     // TODO: COMPLETE PENDING OPERATION SOMEWHERE IN HERE
-
-    if (isFirstOperand == false) {
-        getResult();
-    }
-    if (o == "multiply" || o == "divide") {
+    // if (registers._X_ != "" && registers._Y_ != "") {
+    //     getResult();
+    // }
+    if (processes.includes(o)) {
+        if (registers.process != "" && isFirstOperand == false) {
+            getResult();
+        }
         registers.process = o;
         populateRegisters("y");
     } else if (o == "add" || o == "subtract") {
+        if (registers.cumulative != "" && isFirstOperand == false) {
+            getResult();
+        }
         registers.cumulative = o;
         populateRegisters("z");
     }
     // print_X_ToDisplay();
-    displayFlash();
+    displayBlink();
     displayRegisters();
 }
 
@@ -435,8 +464,8 @@ function immediateOperator(operation) {
     let result = new Operations(registers._X_);
     registers._X_ = result[operation]();
     print_X_ToDisplay();
-    displayFlash();
-
+    displayBlink();
+    displayRegisters();
 }
 
 // function userErrorCorrectionForOperators(o) {
@@ -483,7 +512,7 @@ function removeLeadingZero() {
 }
 
 function getResult() {
-    displayFlash();
+    displayBlink();
     if (isFirstOperand == true) { return }
     let result, operation;
     if (registers.process) {
@@ -491,16 +520,18 @@ function getResult() {
         result = new Operations(registers._Y_, registers._X_);
         registers.process = "";
         registers._Y_ = "";
+        registers._X_ = "";
+        inputValue(result[operation]());
     }
     if (registers.cumulative) {
         operation = registers.cumulative;
         result = new Operations(registers._Z_, registers._X_);
         registers.cumulative = "";
         registers._Z_ = "";
+        registers._X_ = "";
+        inputValue(result[operation]());
     }
-    registers._X_ = "";
-    inputValue(result[operation]());
-    isFirstOperand = false;
+    isFirstOperand = true;
 }
 
 /////////////////////////////////////////////////
