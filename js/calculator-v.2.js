@@ -107,6 +107,7 @@ var re = document.getElementById("result_electronics"),
     numberOfLEDs = 14,
     clear_X_forNewNumber = false,
     isFirstOperand = true,
+    errorCorrectionCurrentInput,
     isPiPressed = false,
     processes = ["multiply", "divide", "xPower", "xRoot"],
     degRad = "deg";
@@ -406,7 +407,7 @@ function print_X_ToDisplay() {
  */
 
 function inputValue(v) {
-    userErrorCorrection();
+    userErrorCorrection(v);
     /**
      * DECIMAL CHECK
      */
@@ -430,11 +431,7 @@ function inputValue(v) {
         registers._X_ = v;
         clear_X_forNewNumber = false;
     }
-    if (registers._Y_ == "" && registers._Z_ == "") {
-        isFirstOperand = true;
-    } else {
-        isFirstOperand = false;
-    }
+
     // print_X_ToDisplay();
     displayBlink();
     displayRegisters();
@@ -445,6 +442,7 @@ function setOperator(o) {
     // if (registers._X_ != "" && registers._Y_ != "") {
     //     getResult();
     // }
+    userErrorCorrection(o);
     if (processes.includes(o)) {
         if (registers.process != "" && isFirstOperand == false) {
             getResult();
@@ -471,10 +469,17 @@ function immediateOperator(operation) {
     displayRegisters();
 }
 
-function userErrorCorrection(input) {
+function userErrorCorrection(input = "") {
+    errorCorrectionCurrentInput = input;
     if (isPiPressed == true) {
         isPiPressed = false;
         clear_X_forNewNumber = true;
+    }
+
+    if (registers._Y_ == "" && registers._Z_ == "") {
+        isFirstOperand = true;
+    } else {
+        isFirstOperand = false;
     }
 }
 
@@ -513,7 +518,8 @@ function removeLeadingZero() {
 
 function getResult() {
     displayBlink();
-    if (isFirstOperand == true) { return }
+    if (isFirstOperand == true) {return;}
+    
     let result, operation;
     if (registers.process) {
         operation = registers.process;
@@ -544,5 +550,6 @@ function displayRegisters() {
     console.log("process", registers.process);
     console.log("cumulative", registers.cumulative);
     console.log("First Operand", isFirstOperand);
+    console.log("Error Correction", errorCorrectionCurrentInput);
     console.log("-----------------");
 }
