@@ -115,6 +115,7 @@ const BUTTON_EVENT_FUNCTIONS = {
         setOperator("xRoot");
     }
 };
+
 /**
  * HELPER FUNCTIONs
  */
@@ -396,7 +397,7 @@ function setOperator(o) {
         populateRegisters("z");
     } else if (
         (o == "multiply" || o == "divide")
-        && (registers.process != "add" && registers.process != "subtract")
+        && (registers.cumulative != "add" && registers.cumulative != "subtract")
     ) {
         registers.process = o;
         LOGIC.isFirstOperand = true;

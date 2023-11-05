@@ -1,10 +1,10 @@
 /**
- * @param {registers._X_} string  Input register
- * @param {registers._Y_} string  Process register
- * @param {registers._Z_} string  Cumulative register
- * @param {registers._M_} float   Memory register for storage
- * @param {registers.process} string 
- * @param {registers.cumulative} string 
+ * @param {registers._X_}           string  Input register
+ * @param {registers._Y_}           string  Process register
+ * @param {registers._Z_}           string  Cumulative register
+ * @param {registers._M_}           float   Memory register for storage
+ * @param {registers.process}       string 
+ * @param {registers.cumulative}    string 
  */
 export var registers = {
     _X_: "",
