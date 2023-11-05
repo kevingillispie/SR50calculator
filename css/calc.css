@@ -1,8 +1,21 @@
-@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@1,500&family=Rajdhani:wght@400;600&family=Rubik:wght@500&display=swap');
-
 @font-face {
     font-family: 'MONOITALIC';
     src: url("../fonts/digital-7.monoitalic.ttf");
+}
+
+@font-face {
+    font-family: 'Newsreader';
+    src: url('../fonts/Newsreader/Newsreader-Italic-VariableFont_opsz,wght.ttf');
+}
+
+@font-face {
+    font-family: 'Rajdhani';
+    src: url('../fonts/Rajdhani/regular.ttf');
+}
+
+@font-face {
+    font-family: 'Rubik';
+    src: url('../fonts/Rubik/Rubik-VariableFont_wght.ttf');
 }
 
 :root {

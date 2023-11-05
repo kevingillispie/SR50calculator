@@ -1,8 +1,8 @@
 .result.decimal::after {
-    /* content: '.';
-    position: absolute; */
-    /* margin: -33px 0 0 -10px; */
-    /* font-size: 40px;
+    content: '.';
+    position: absolute;
+    margin: -34px 0 0 7px;
+    font-size: 40px;
     color: rgb(253, 147, 25);
-    text-shadow: 1px 0 4px red, -1px 0 4px red; */
+    text-shadow: 1px 0 4px red, -1px 0 4px red;
 }
