@@ -31,7 +31,7 @@ export var LOGIC = {
     errorCorrectionCurrentInput: "",
     isPiPressed: false,
     processes: ["multiply", "divide", "xPower", "xRoot"],
-    radDeg: "rad",
+    radDegSetting: "rad",
     arc: false,
     hyperbolic: false
 };

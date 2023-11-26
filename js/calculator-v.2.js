@@ -19,12 +19,12 @@ const BUTTON_EVENT_FUNCTIONS = {
         registers._X_ = "";
         inputValue(0);
     },
-    "radDeg": function () {
-        LOGIC.radDeg = LOGIC.radDeg == 'rad' ? 'deg' : 'rad';
-        immediateOperator('degRadInverse');
-    },
     "decimal": function () {
         inputValue(this.dataset.value);
+    },
+    "deg-rad": function () {
+        // LOGIC.radDegSetting = LOGIC.radDegSetting == 'rad' ? 'deg' : 'rad';
+        immediateOperator('radDegInverse');
     },
     "digit": function () {
         inputValue(this.dataset.value);
@@ -51,6 +51,7 @@ const BUTTON_EVENT_FUNCTIONS = {
     },
     "hyp": function () {
         LOGIC.hyperbolic = (LOGIC.hyperbolic == false) ? true : false;
+        displayRegisters();
     },
     "multiply": function () {
         setOperator("multiply");
@@ -63,7 +64,7 @@ const BUTTON_EVENT_FUNCTIONS = {
     },
     "pi": function () {
         /**
-         * THE MANUAL INDICATES PI IS STORED 
+         * THE USER MANUAL INDICATES PI IS STORED 
          * "TO 13 SIGNIFICANT DIGITS (3.141592653590)" 
          * (PAGE 6)
          */
@@ -82,6 +83,7 @@ const BUTTON_EVENT_FUNCTIONS = {
     },
     "sine": function () {
         immediateOperator("sine");
+        displayRegisters();
     },
     "sqrt": function () {
         immediateOperator("sqrt");
@@ -125,25 +127,25 @@ class Operations {
     cos() {
         let cTemp = this.term1;
         if (LOGIC.arc == true && LOGIC.hyperbolic == true) {
-            if (LOGIC.radDeg == "deg") {
+            if (LOGIC.radDegSetting == "deg") {
                 cTemp = Math.acosh(cTemp) * (180 / Math.PI);
             } else {
                 cTemp = Math.acosh(cTemp);
             }
         } else if (LOGIC.arc == true && LOGIC.hyperbolic == false) {
-            if (LOGIC.radDeg == "deg") {
+            if (LOGIC.radDegSetting == "deg") {
                 cTemp = Math.acos(cTemp) * (180 / Math.PI);
             } else {
                 cTemp = Math.acos(cTemp);
             }
         } else if (LOGIC.arc == false && LOGIC.hyperbolic == true) {
-            if (LOGIC.radDeg == "deg") {
+            if (LOGIC.radDegSetting == "deg") {
                 cTemp = Math.cosh(cTemp) * (180 / Math.PI);
             } else {
                 cTemp = Math.cosh(cTemp);
             }
         } else {
-            if (LOGIC.radDeg == "deg") {
+            if (LOGIC.radDegSetting == "deg") {
                 cTemp = Math.cos(cTemp * (Math.PI / 180));
             } else {
                 cTemp = Math.cos(cTemp);
@@ -154,8 +156,8 @@ class Operations {
         LOGIC.hyperbolic = false;
         return cTemp;
     }
-    degRadInverse() {
-        if (LOGIC.radDeg == "deg") {
+    radDegInverse() {
+        if (LOGIC.radDegSetting == "deg") {
             return registers._X_ * (180 / Math.PI);
         }
         return registers._X_ = registers._X_ * (Math.PI / 180);
@@ -200,28 +202,28 @@ class Operations {
         let sTemp = this.term1;
         if (LOGIC.arc == true && LOGIC.hyperbolic == true) {
             console.log("arc && hyp");
-            if (LOGIC.radDeg == "deg") {
+            if (LOGIC.radDegSetting == "deg") {
                 sTemp = Math.asinh(sTemp) * (180 / Math.PI);
             } else {
                 sTemp = Math.asinh(sTemp);
             }
         } else if (LOGIC.arc == true && LOGIC.hyperbolic == false) {
             console.log("arc && !hyp");
-            if (LOGIC.radDeg == "deg") {
+            if (LOGIC.radDegSetting == "deg") {
                 sTemp = Math.asin(sTemp) * (180 / Math.PI);
             } else {
                 sTemp = Math.asin(sTemp);
             }
         } else if (LOGIC.arc == false && LOGIC.hyperbolic == true) {
             console.log("!arc && hyp");
-            if (LOGIC.radDeg == "deg") {
-                sTemp = Math.sinh(sTemp) * (180 / Math.PI);
-            } else {
+            if (LOGIC.radDegSetting == "deg") {
                 sTemp = Math.sinh(sTemp);
+            } else {
+                sTemp = Math.sinh(sTemp) * (180 / Math.PI);
             }
         } else {
             console.log("!arc && !hyp");
-            if (LOGIC.radDeg == "deg") {
+            if (LOGIC.radDegSetting == "deg") {
                 sTemp = Math.sin(sTemp * (Math.PI / 180));
             } else {
                 sTemp = Math.sin(sTemp);
@@ -244,25 +246,25 @@ class Operations {
     tan() {
         let tTemp = this.term1;
         if (LOGIC.arc == true && LOGIC.hyperbolic == true) {
-            if (LOGIC.radDeg == "deg") {
+            if (LOGIC.radDegSetting == "deg") {
                 tTemp = Math.atanh(tTemp) * (180 / Math.PI);
             } else {
                 tTemp = Math.atanh(tTemp);
             }
         } else if (LOGIC.arc == true && LOGIC.hyperbolic == false) {
-            if (LOGIC.radDeg == "deg") {
+            if (LOGIC.radDegSetting == "deg") {
                 tTemp = Math.atan(tTemp) * (180 / Math.PI);
             } else {
                 tTemp = Math.atan(tTemp);
             }
         } else if (LOGIC.arc == false && LOGIC.hyperbolic == true) {
-            if (LOGIC.radDeg == "deg") {
+            if (LOGIC.radDegSetting == "deg") {
                 tTemp = Math.tanh(tTemp) * (180 / Math.PI);
             } else {
                 tTemp = Math.tanh(tTemp);
             }
         } else {
-            if (LOGIC.radDeg == "deg") {
+            if (LOGIC.radDegSetting == "deg") {
                 tTemp = Math.tan(tTemp * (Math.PI / 180));
             } else {
                 tTemp = Math.tan(tTemp);
@@ -277,15 +279,15 @@ class Operations {
         return parseFloat(n);
     }
     xPower() {
-        return Math.pow(this.term2, this.term1);
+        return Math.pow(this.term1, this.term2);
     }
     xRoot() {
-        return this.term2 ** (1 / this.term1);
+        return this.term1 ** (1 / this.term2);
     }
 }
 
 /**
- * HELPER FUNCTIONs
+ * HELPER FUNCTIONS
  */
 function clear() {
     clearAllRegisters();
@@ -293,9 +295,9 @@ function clear() {
     LOGIC.arc = false;
     LOGIC.hyperbolic = false;
     if (HTML.radDegSwitch.classList.contains("on")) {
-        LOGIC.radDeg = "deg";
+        LOGIC.radDegSetting = "deg";
     } else {
-        LOGIC.radDeg = "rad";
+        LOGIC.radDegSetting = "rad";
     }
     setTimeout(function () {
         document.getElementsByClassName("result")[10].classList.add("decimal");
@@ -328,16 +330,16 @@ function reset_M_() {
 }
 
 function resetRadDeg() {
-    LOGIC.radDeg = (!document.querySelector("[data-value=\"rad-deg\"]").classList.contains("on")) ? "rad" : "deg";
+    LOGIC.radDegSwitch = (!document.querySelector('[data-value="rad-deg"]').classList.contains("on")) ? "rad" : "deg";
 }
 /**
- * 
+ * HELPER FUNCTIONS END
  */
 
 /**
  * ONBOOT LOGIC
  */
-/* CREATE DISPLAY BACKGROUND */
+// CREATE DISPLAY BACKGROUND
 function digitDisplayElement(value = "") {
     let DIV = document.createElement("DIV");
     DIV.setAttribute("class", "result");
@@ -379,16 +381,16 @@ function digitDisplayElement(value = "") {
     HTML.radDegSwitch.addEventListener("click", function () {
         this.classList.toggle("on");
         if (!this.classList.contains("on")) {
-            LOGIC.radDeg = "rad";
+            LOGIC.radDegSetting = "rad";
             // registers._X_ = registers._X_ * (Math.PI / 180);
         } else {
-            LOGIC.radDeg = "deg";
+            LOGIC.radDegSetting = "deg";
             // registers._X_ = registers._X_ * (180 * Math.PI);
         }
     });
 }();
 /**
- * /END
+ * ONBOOT LOGIC END
  */
 
 /**
@@ -406,6 +408,25 @@ function powerOn() {
         btn.addEventListener("click", BUTTON_EVENT_FUNCTIONS[(btn.classList.contains("digit") ? "digit" : "")]);
         btn.addEventListener("click", displayBlink);
     });
+
+    document.addEventListener('keydown', (e) => {
+        keyPress(e.key);
+    });
+}
+
+function keyPress(key = null) {
+    let keyNames = {
+        '+': 'add',
+        '-': 'subtract',
+        '/': 'divide',
+        '*': 'multiply',
+        '=': 'equals',
+        'Enter': 'equals'
+    }
+    key = (keyNames[key]) ? keyNames[key] : key;
+    let btn = document.querySelector('[name="' + key + '"]');
+    if (btn) document.querySelector('[name="' + key + '"]').click();
+    displayBlink();
 }
 
 function powerOff() {
@@ -430,7 +451,7 @@ function powerFlash() {
     setTimeout(resetDisplay, 10);
 }
 /**
- * /END
+ * POWER ON / OFF END
  */
 
 /**
@@ -494,7 +515,7 @@ function print_X_ToDisplay() {
     setNegativeSign();
 }
 /**
- * 
+ * DISPLAY LOGIC END
  */
 
 /**
@@ -554,16 +575,8 @@ function setOperator(o) {
         registers.process = "";
     }
     userErrorCorrection(o);
+    // debugger;
     if (
-        (o == "add" || o == "subtract")
-        && (registers.process != "multiply" && registers.process != "divide")
-    ) {
-        getResult();
-        registers.cumulative = o;
-        LOGIC.isFirstOperand = true;
-        registers._Z_ = "";
-        populateRegisters("z");
-    } else if (
         (o == "multiply" || o == "divide")
         && (registers.cumulative != "add" && registers.cumulative != "subtract")
     ) {
@@ -586,6 +599,15 @@ function setOperator(o) {
         }
         registers.process = o;
         populateRegisters("y");
+    } else if (
+        (o == "add" || o == "subtract")
+        && (registers.process != "multiply" && registers.process != "divide")
+    ) {
+        getResult();
+        registers.cumulative = o;
+        LOGIC.isFirstOperand = true;
+        registers._Z_ = "";
+        populateRegisters("z");
     } else if (o == "add" || o == "subtract") {
         if (
             registers.cumulative != ""
@@ -679,7 +701,7 @@ function displayRegisters() {
     console.log("cumulative", registers.cumulative);
     console.log("First Operand", LOGIC.isFirstOperand);
     console.log("Error Correction", LOGIC.errorCorrectionCurrentInput);
-    console.log("radDeg:", LOGIC.radDeg);
+    console.log("radDegSetting:", LOGIC.radDegSetting);
     console.log("arc:", LOGIC.arc);
     console.log("hyp:", LOGIC.hyperbolic);
     console.log("-----------------");
