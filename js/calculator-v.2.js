@@ -416,6 +416,7 @@ function powerOn() {
 
 function keyPress(key = null) {
     let keyNames = {
+        '.': 'decimal',
         '+': 'add',
         '-': 'subtract',
         '/': 'divide',
@@ -697,9 +698,9 @@ function displayRegisters() {
     console.log("Y", registers._Y_);
     console.log("Z", registers._Z_);
     console.log("M", registers._M_);
-    console.log("process", registers.process);
-    console.log("cumulative", registers.cumulative);
-    console.log("First Operand", LOGIC.isFirstOperand);
+    console.log("r.process", registers.process);
+    console.log("r.cumulative", registers.cumulative);
+    console.log("Is First Operand?", LOGIC.isFirstOperand);
     console.log("Error Correction", LOGIC.errorCorrectionCurrentInput);
     console.log("radDegSetting:", LOGIC.radDegSetting);
     console.log("arc:", LOGIC.arc);
