@@ -33,7 +33,8 @@ export var LOGIC = {
     processes: ["multiply", "divide", "xPower", "xRoot"],
     radDegSetting: "rad",
     arc: false,
-    hyperbolic: false
+    hyperbolic: false,
+    isOperandCountEven: true
 };
 
 export default { registers, HTML, LOGIC }

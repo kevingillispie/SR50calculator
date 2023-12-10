@@ -45,6 +45,29 @@ button {
     background-color: var(--btn-orange) !important;
 }
 
+.page-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+}
+
+table {
+    margin: 10px;
+}
+
+td {
+    padding: 5px;
+    width: 200px;
+}
+
+tr:nth-child(odd) {
+    background-color: #E7E9EB;
+}
+
+#registers {
+    font-family: monospace;
+}
+
 #calc {
     padding: 14px;
     max-width: 562px;
@@ -496,6 +519,7 @@ button {
     -webkit-box-shadow: .5px 2px 2px black;
     box-shadow: .5px 2px 2px black;
 }
+
 /*
 #trigonometry .btn::after,
 .function_keys .btn::after {
@@ -558,6 +582,12 @@ button {
     font-family: 'Newsreader', serif;
 }
 
+.greek sup {
+    position: absolute;
+    margin: 2px 0 0 2px;
+    font-size: .75em;
+}
+
 .btn.squared::after {
     margin-left: -22px;
 }
@@ -571,7 +601,7 @@ button {
 .btn.multiply,
 .btn.subtract,
 .btn.add,
-.btn.equals, 
+.btn.equals,
 .btn.decimal {
     font-size: 22px;
 }
@@ -613,9 +643,9 @@ button {
 }
 
 .swap-arrows .right {
-    margin-top: -20px;
+    margin-top: -15px;
 }
 
 .swap-arrows .left {
-    margin-top: -8px;
+    margin-top: -6px;
 }

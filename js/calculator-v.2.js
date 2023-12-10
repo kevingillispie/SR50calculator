@@ -7,7 +7,6 @@ const BUTTON_EVENT_FUNCTIONS = {
     },
     "arc": function () {
         LOGIC.arc = (LOGIC.arc == false) ? true : false;
-        displayRegisters();
     },
     "cos": function () {
         immediateOperator("cos");
@@ -40,18 +39,15 @@ const BUTTON_EVENT_FUNCTIONS = {
         immediateOperator("eRaised");
     },
     "exchange": function () {
-        if (registers._Y_) {
-            let y = registers._Y_;
-            registers._Y_ = registers._X_;
-            registers._X_ = y;
-        }
+        let y = (registers._Y_) ? registers._Y_ : LOGIC.errorCorrectionCurrentInput;
+        registers._Y_ = registers._X_;
+        registers._X_ = y;
     },
     "factorial": function () {
         immediateOperator("factorial");
     },
     "hyp": function () {
         LOGIC.hyperbolic = (LOGIC.hyperbolic == false) ? true : false;
-        displayRegisters();
     },
     "multiply": function () {
         setOperator("multiply");
@@ -69,6 +65,7 @@ const BUTTON_EVENT_FUNCTIONS = {
          * (PAGE 6)
          */
         inputValue(Math.PI.toPrecision(13));
+        LOGIC.clear_X_forNewNumber = true;
         LOGIC.isPiPressed = true;
     },
     "posNeg": function () {
@@ -77,13 +74,13 @@ const BUTTON_EVENT_FUNCTIONS = {
     "recall": function () {
         resetDisplay();
         inputValue(registers._M_);
+        LOGIC.clear_X_forNewNumber = true;
     },
     "reciprocal": function () {
         immediateOperator("reciprocal");
     },
     "sine": function () {
         immediateOperator("sine");
-        displayRegisters();
     },
     "sqrt": function () {
         immediateOperator("sqrt");
@@ -97,12 +94,8 @@ const BUTTON_EVENT_FUNCTIONS = {
     "subtract": function () {
         setOperator("subtract");
     },
-    "sum": function () {
-        // setregisters._M_(registers._X_ + registers._M_);
-        console.log(registers._M_, true);
-        // clearTerms();
-        // toggleNewTerm();
-        // updateNewTermregisters._X_();
+    "sum": function (m = 0) {
+        registers._M_ = new Operations(registers._M_, registers._X_).add();
     },
     "tan": function () {
         immediateOperator("tan");
@@ -151,7 +144,6 @@ class Operations {
                 cTemp = Math.cos(cTemp);
             }
         }
-        displayRegisters();
         LOGIC.arc = false;
         LOGIC.hyperbolic = false;
         return cTemp;
@@ -229,7 +221,6 @@ class Operations {
                 sTemp = Math.sin(sTemp);
             }
         }
-        displayRegisters();
         LOGIC.arc = false;
         LOGIC.hyperbolic = false;
         return sTemp;
@@ -270,7 +261,6 @@ class Operations {
                 tTemp = Math.tan(tTemp);
             }
         }
-        displayRegisters();
         LOGIC.arc = false;
         LOGIC.hyperbolic = false;
         return tTemp;
@@ -294,6 +284,7 @@ function clear() {
     inputValue(0);
     LOGIC.arc = false;
     LOGIC.hyperbolic = false;
+    LOGIC.isOperandCountEven = true;
     if (HTML.radDegSwitch.classList.contains("on")) {
         LOGIC.radDegSetting = "deg";
     } else {
@@ -317,12 +308,32 @@ function checkForDecimalIn_X_() {
 }
 
 function scientificNotation(v) {
-    if (v.length > 11 && v.search(".") < 0) {
-        v = parseFloat(v).toPrecision(11);
-    } else if (v.length > 11) {
-        v = v.substring(0, 11);
+    // if (v.length > 11 && v.search(".") < 0) {
+    //     v = parseFloat(v).toPrecision(11);
+    // } else if (v.length > 11) {
+    //     v = v.substring(0, 11);
+    // }
+    // return v;
+    if (v == "+9.999999999e+99") {
+        return v;
     }
-    return v;
+    // debugger;
+    let p = 10 - parseInt(v.indexOf("."));
+    let eIndex = v.indexOf("e");
+    if (eIndex >= 0 && Math.sign(v) !== -1) {
+        return parseFloat(v).toPrecision(10);
+    } else if (eIndex >= 0 && Math.sign(v) == -1) {
+        return parseFloat(v).toPrecision(10);
+    } else if (v.length < 11) {
+        return v;
+    } else {
+        if (v.length > 10 && p > 10) {
+            return parseFloat(v).toExponential(9);
+        } else if (p < 0) {
+            return parseFloat(v);
+        }
+        return (Math.sign(v) >= 0) ? parseFloat(v).toFixed(p) : parseFloat(v).toFixed(v + 1);
+    }
 }
 
 function reset_M_() {
@@ -498,7 +509,7 @@ function isAllZeros(n) {
 // ONLY DISPLAY X REGISTER
 function print_X_ToDisplay() {
     registers._X_ = registers._X_.toString();
-    let v = scientificNotation(registers._X_);
+    let v = registers._X_;
     // if (false == isAllZeros(v) && v[v.length - 1] == "0") {
     //     v = v.slice(0, -1);
     // }
@@ -542,34 +553,6 @@ function userErrorCorrection(input = "") {
     }
 }
 
-function inputValue(v) {
-    userErrorCorrection(v);
-    /**
-     * DECIMAL CHECK
-     */
-    if (v == "." && checkForDecimalIn_X_() > -1) {
-        return;
-    }
-
-    /**
-     * REMOVE PLACEHOLDER ZERO IF EXISTS
-     */
-    if (v != ".") {
-        removeLeadingZero();
-    }
-    /**
-     * 
-     */
-
-    if (LOGIC.clear_X_forNewNumber == false) {
-        registers._X_ += v;
-    } else {
-        registers._X_ = v;
-        LOGIC.clear_X_forNewNumber = false;
-    }
-    displayRegisters();
-}
-
 function setOperator(o) {
     // TODO: COMPLETE PENDING OPERATION SOMEWHERE IN HERE
     if (registers._X_ != "" && registers._Y_ == "") {
@@ -578,13 +561,32 @@ function setOperator(o) {
     userErrorCorrection(o);
     // debugger;
     if (
-        (o == "multiply" || o == "divide")
-        && (registers.cumulative != "add" && registers.cumulative != "subtract")
+        (
+            o == "multiply"
+            || o == "divide"
+            || o == "xPower"
+            || o == "xRoot"
+        )
+        && (
+            registers.cumulative != "add"
+            && registers.cumulative != "subtract"
+        )
+        && LOGIC.isOperandCountEven == true
     ) {
+        getResult();
         registers.process = o;
+    } else if (
+        (o == "add" || o == "subtract")
+        && (
+            registers.process != "multiply"
+            && registers.process != "divide"
+            && registers.process != "xPower"
+            && registers.process != "xRoot"
+        )
+    ) {
+        getResult();
+        registers.cumulative = o;
         LOGIC.isFirstOperand = true;
-        registers._Y_ = "";
-        populateRegisters("y");
     } else if (
         LOGIC.processes.includes(o)
         || (
@@ -599,16 +601,6 @@ function setOperator(o) {
             getResult();
         }
         registers.process = o;
-        populateRegisters("y");
-    } else if (
-        (o == "add" || o == "subtract")
-        && (registers.process != "multiply" && registers.process != "divide")
-    ) {
-        getResult();
-        registers.cumulative = o;
-        LOGIC.isFirstOperand = true;
-        registers._Z_ = "";
-        populateRegisters("z");
     } else if (o == "add" || o == "subtract") {
         if (
             registers.cumulative != ""
@@ -618,27 +610,31 @@ function setOperator(o) {
             getResult();
         }
         registers.cumulative = o;
-        populateRegisters("z");
     }
+
+    if (o == 'add' || o == 'subtract') {
+        populateRegisters("z");
+    } else {
+        populateRegisters("y");
+    }
+    LOGIC.isOperandCountEven = !LOGIC.isOperandCountEven;
 }
 
 function populateRegisters(reg) {
+    // debugger;
     if (reg == "y") {
-        registers._Y_ = registers._X_;
+        registers._Y_ = scientificNotation(registers._X_);
         if (LOGIC.isFirstOperand == true) {
             registers._Z_ = "";
             registers.cumulative = "";
         }
-    } else {
-        registers._Z_ = registers._X_;
-        if (LOGIC.isFirstOperand == true) {
-            registers._Y_ = "";
-            registers.process = "";
-        }
+    } else if (LOGIC.isFirstOperand == true) {
+        registers._Z_ = scientificNotation(registers._X_);
+        registers._Y_ = "";
+        registers.process = "";
     }
 
     (LOGIC.clear_X_forNewNumber == false) ? LOGIC.clear_X_forNewNumber = true : "";
-    displayRegisters();
 }
 
 function clearAllRegisters() {
@@ -650,32 +646,44 @@ function clearAllRegisters() {
 
 function removeLeadingZero() {
     for (let reg in registers) {
-        if (reg != "_M_" && registers[reg][0] == "0" && registers[reg][1] != ".") {
+        if (
+            reg != "_M_"
+            && registers[reg][0] == "0"
+            && registers[reg][1] != "."
+        ) {
             registers[reg] = registers[reg][0].substr(1);
         }
     }
 }
 
-function getResult(e = "") {
+function getResult(e = null) {
     if (LOGIC.isFirstOperand == true) return;
-    if (
-        e != ""
-        && e.target.innerText == "="
-        && registers._X_ == registers._Y_
-    ) {
-        registers.process = "";
-    }
 
     let result, operation;
-
-    if (registers.process) {
+    // debugger;
+    if (registers.process && LOGIC.isOperandCountEven == true) {
         operation = registers.process;
         result = new Operations(registers._Y_, registers._X_);
         registers.process = "";
         registers._Y_ = "";
         registers._X_ = "";
         inputValue(result[operation]());
+        populateRegisters(registers.process);
+    } else if (
+        registers.process
+        && registers.cumulative
+        && LOGIC.isOperandCountEven == false
+    ) {
+        operation = registers.cumulative;
+        result = new Operations(registers._Z_, registers._X_);
+        registers.cumulative = "";
+        registers._Z_ = "";
+        registers._Y_ = "";
+        registers._X_ = "";
+        inputValue(result[operation]());
+        populateRegisters(registers.cumulative);
     }
+
     if (registers.cumulative) {
         operation = registers.cumulative;
         result = new Operations(registers._Z_, registers._X_);
@@ -683,27 +691,101 @@ function getResult(e = "") {
         registers._Z_ = "";
         registers._X_ = "";
         inputValue(result[operation]());
+        populateRegisters(registers.cumulative);
+    }
+    if (
+        e != null
+        && e.target.innerText == "="
+        && registers._X_ == registers._Y_
+    ) {
+        registers.process = "";
     }
     LOGIC.isFirstOperand = true;
+    LOGIC.isOperandCountEven = true;
     LOGIC.arc = false;
     LOGIC.hyperbolic = false;
     resetRadDeg();
-    displayRegisters();
+}
+
+function inputValue(v) {
+    userErrorCorrection(v);
+    /**
+     * DECIMAL CHECK
+     */
+    if (
+        v == "."
+        && checkForDecimalIn_X_() > -1
+        && LOGIC.clear_X_forNewNumber == false
+    ) {
+        return;
+    }
+
+    /**
+     * REMOVE PLACEHOLDER ZERO IF EXISTS
+     */
+    if (
+        v != "."
+        && LOGIC.clear_X_forNewNumber == false
+    ) {
+        removeLeadingZero();
+    }
+    /**
+     * 
+     */
+
+    if (LOGIC.clear_X_forNewNumber == false) {
+        registers._X_ += v;
+    } else {
+        registers._X_ = v;
+        LOGIC.isOperandCountEven = true;
+        LOGIC.clear_X_forNewNumber = false;
+    }
 }
 
 /////////////////////////////////////////////////
 
+function isButton(el) {
+    do {
+        if (el.tagName == 'BUTTON') {
+            return true
+        } else {
+            el = el.parentElement;
+        }
+    } while (el.tagName != 'HTML');
+    return false;
+}
+
+document.addEventListener('click', (e) => {
+    if (isButton(e.target) == true) displayRegisters();
+});
+
 function displayRegisters() {
-    console.log("X", registers._X_);
-    console.log("Y", registers._Y_);
-    console.log("Z", registers._Z_);
-    console.log("M", registers._M_);
-    console.log("r.process", registers.process);
-    console.log("r.cumulative", registers.cumulative);
-    console.log("Is First Operand?", LOGIC.isFirstOperand);
-    console.log("Error Correction", LOGIC.errorCorrectionCurrentInput);
-    console.log("radDegSetting:", LOGIC.radDegSetting);
-    console.log("arc:", LOGIC.arc);
-    console.log("hyp:", LOGIC.hyperbolic);
+    let output = document.getElementById('registers');
+    output.innerHTML = null;
+    output.insertAdjacentHTML('afterbegin', '<tr><th>Register/Variable</th><th>State</th></tr>');
+    let viewables = {
+        'X': registers._X_,
+        'Y': registers._Y_,
+        'Z': registers._Z_,
+        'M': registers._M_,
+        "clear X?": LOGIC.clear_X_forNewNumber,
+        "r.process": registers.process,
+        "r.cumulative": registers.cumulative,
+        "Is First Operand?": LOGIC.isFirstOperand,
+        "Error Correction": LOGIC.errorCorrectionCurrentInput,
+        "radDegSetting:": LOGIC.radDegSetting,
+        "Is arc?": LOGIC.arc,
+        "Is hyp?": LOGIC.hyperbolic,
+        "Is count even?": LOGIC.isOperandCountEven,
+        "Is Pi pressed?": LOGIC.isPiPressed,
+    }
+
+    for (const key in viewables) {
+        if (Object.hasOwnProperty.call(viewables, key)) {
+            output.insertAdjacentHTML('beforeend', '<tr><td>' + key + '</td><td>' + viewables[key] + '</td></tr>');
+            console.log(key, viewables[key]);
+        }
+    }
     console.log("-----------------");
 }
+displayRegisters();
