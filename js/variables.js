@@ -34,7 +34,8 @@ export var LOGIC = {
     radDegSetting: "rad",
     arc: false,
     hyperbolic: false,
-    isOperandCountEven: true
+    isOperandCountEven: true,
+    isEE: false
 };
 
 export default { registers, HTML, LOGIC }

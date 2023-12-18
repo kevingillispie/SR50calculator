@@ -31,7 +31,10 @@ const BUTTON_EVENT_FUNCTIONS = {
     "divide": function () {
         setOperator("divide");
     },
-    "ee": function () { },
+    "ee": function () {
+        LOGIC.isEE = true;
+        immediateOperator('ee');
+    },
     "equals": function (e) {
         getResult(e);
     },
@@ -156,6 +159,9 @@ class Operations {
     }
     divide() {
         return this.term1 / this.term2;
+    }
+    ee() {
+        return Number.parseFloat(this.term1).toExponential();
     }
     eRaised() {
         return Math.pow(Math.E, this.term1);
@@ -284,6 +290,7 @@ function clear() {
     inputValue(0);
     LOGIC.arc = false;
     LOGIC.hyperbolic = false;
+    LOGIC.isEE = false;
     LOGIC.isOperandCountEven = true;
     if (HTML.radDegSwitch.classList.contains("on")) {
         LOGIC.radDegSetting = "deg";
@@ -308,6 +315,7 @@ function checkForDecimalIn_X_() {
 }
 
 function scientificNotation(v) {
+    // console.log('SCIENTIFIC CHECK');
     // if (v.length > 11 && v.search(".") < 0) {
     //     v = parseFloat(v).toPrecision(11);
     // } else if (v.length > 11) {
@@ -318,7 +326,8 @@ function scientificNotation(v) {
         return v;
     }
     // debugger;
-    let p = 10 - parseInt(v.indexOf("."));
+    let dotIndex = v.indexOf(".");
+    let p = 10 - (dotIndex != 'undefined' ? parseInt(dotIndex) : 0);
     let eIndex = v.indexOf("e");
     if (eIndex >= 0 && Math.sign(v) !== -1) {
         return parseFloat(v).toPrecision(10);
@@ -516,6 +525,7 @@ function print_X_ToDisplay() {
     let vIndex = v.length;
     let shift = 2;
     for (let i = LOGIC.numberOfLEDs - 1; i >= 0; i--) {
+        if (v[vIndex] == 'undefined') continue;
         if (v[vIndex] == ".") {
             document.querySelectorAll(".result")[i - 2].classList.add("decimal");
             shift = 1;
@@ -756,7 +766,7 @@ function isButton(el) {
 }
 
 document.addEventListener('click', (e) => {
-    if (isButton(e.target) == true) displayRegisters();
+    if (isButton(e.target) == true || e.target.getAttribute('role') == 'switch') displayRegisters();
 });
 
 function displayRegisters() {
@@ -778,6 +788,7 @@ function displayRegisters() {
         "Is hyp?": LOGIC.hyperbolic,
         "Is count even?": LOGIC.isOperandCountEven,
         "Is Pi pressed?": LOGIC.isPiPressed,
+        "Is EE?": LOGIC.isEE,
     }
 
     for (const key in viewables) {
